@@ -28,6 +28,8 @@ describe("detectIpVersion", () => {
     ["1::2::3", null],
     ["::ffff:192.0.2.999", null],
     ["::192.0.2.1:1", null],
+    ["192.0.2.1::", null],
+    ["1:192.0.2.1::", null],
     ["not-an-ip", null],
     [null, null],
   ] as const)("returns %s for %s", (address, expected) => {
@@ -70,5 +72,25 @@ describe("buildServerInspection", () => {
     expect(result.headers["User-Agent"]).toBe("whoami-test-agent/1.0");
     expect(JSON.stringify(result)).not.toContain("secret-");
     expect(Object.keys(result.headers)).toEqual(ALLOWED_REQUEST_HEADERS);
+  });
+
+  it("normalizes invalid Cloudflare values without discarding valid siblings", () => {
+    const result = buildServerInspection(
+      createRequest(
+        {},
+        {
+          asn: Number.NaN,
+          asOrganization: 42,
+          city: "Tokyo",
+          clientQuicRtt: Number.POSITIVE_INFINITY,
+          tlsVersion: "",
+        },
+      ),
+    );
+
+    expect(result.network).toEqual({ asn: null, organization: null });
+    expect(result.location.city).toBe("Tokyo");
+    expect(result.connection.quicRttMs).toBeNull();
+    expect(result.tls.version).toBeNull();
   });
 });
