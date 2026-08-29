@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { KeyValueSection } from "./KeyValueSection";
@@ -68,18 +68,27 @@ describe("ServerDetails", () => {
             items={[{ label: "User agent", value: "Not supported" }]}
           />
         }
+        extendedBrowserDetails={
+          <KeyValueSection
+            title="Device and screen"
+            items={[{ label: "Screen", value: "1 × 1" }]}
+          />
+        }
         copyControl={<button type="button">Copy IP address</button>}
       />,
     );
+
+    fireEvent.click(screen.getByText("More details"));
 
     expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
       "Public IP",
       "Network",
       "Approximate location",
+      "Browser",
       "Connection",
       "TLS",
       "Cloudflare",
-      "Browser",
+      "Device and screen",
       "Request headers",
     ]);
 

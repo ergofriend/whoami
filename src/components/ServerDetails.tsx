@@ -2,14 +2,21 @@ import type { ReactNode } from "react";
 
 import type { ServerInspection } from "../features/server/server-inspection";
 import { KeyValueSection } from "./KeyValueSection";
+import { SketchUnderline } from "./Sketch";
 
 type ServerDetailsProps = {
   inspection: ServerInspection;
   browserDetails: ReactNode;
+  extendedBrowserDetails?: ReactNode;
   copyControl?: ReactNode;
 };
 
-export function ServerDetails({ inspection, browserDetails, copyControl }: ServerDetailsProps) {
+export function ServerDetails({
+  inspection,
+  browserDetails,
+  extendedBrowserDetails,
+  copyControl,
+}: ServerDetailsProps) {
   const requestHeaderItems = Object.entries(inspection.headers).map(([label, value]) => ({
     label,
     value,
@@ -52,34 +59,43 @@ export function ServerDetails({ inspection, browserDetails, copyControl }: Serve
         ]}
       />
 
-      <KeyValueSection
-        title="Connection"
-        items={[
-          { label: "HTTP protocol", value: inspection.connection.httpProtocol },
-          { label: "Request priority", value: inspection.connection.requestPriority },
-          { label: "Accepted encodings", value: inspection.connection.clientAcceptEncoding },
-          { label: "TCP RTT (ms)", value: inspection.connection.tcpRttMs },
-          { label: "QUIC RTT (ms)", value: inspection.connection.quicRttMs },
-        ]}
-      />
-
-      <KeyValueSection
-        title="TLS"
-        items={[
-          { label: "Version", value: inspection.tls.version },
-          { label: "Cipher", value: inspection.tls.cipher },
-          { label: "ClientHello length", value: inspection.tls.clientHelloLength },
-        ]}
-      />
-
-      <KeyValueSection
-        title="Cloudflare"
-        items={[{ label: "Data center", value: inspection.cloudflare.colo }]}
-      />
-
       {browserDetails}
 
-      <KeyValueSection title="Request headers" items={requestHeaderItems} />
+      <details className="more-details">
+        <summary className="sketch-heading">
+          <SketchUnderline>More details</SketchUnderline>
+        </summary>
+        <div className="information-stack details-stack">
+          <KeyValueSection
+            title="Connection"
+            items={[
+              { label: "HTTP protocol", value: inspection.connection.httpProtocol },
+              { label: "Request priority", value: inspection.connection.requestPriority },
+              { label: "Accepted encodings", value: inspection.connection.clientAcceptEncoding },
+              { label: "TCP RTT (ms)", value: inspection.connection.tcpRttMs },
+              { label: "QUIC RTT (ms)", value: inspection.connection.quicRttMs },
+            ]}
+          />
+
+          <KeyValueSection
+            title="TLS"
+            items={[
+              { label: "Version", value: inspection.tls.version },
+              { label: "Cipher", value: inspection.tls.cipher },
+              { label: "ClientHello length", value: inspection.tls.clientHelloLength },
+            ]}
+          />
+
+          <KeyValueSection
+            title="Cloudflare"
+            items={[{ label: "Data center", value: inspection.cloudflare.colo }]}
+          />
+
+          {extendedBrowserDetails}
+
+          <KeyValueSection title="Request headers" items={requestHeaderItems} />
+        </div>
+      </details>
     </>
   );
 }

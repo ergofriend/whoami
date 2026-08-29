@@ -25,7 +25,8 @@ export function HomeView({ inspection }: HomeViewProps) {
       <main className="information-stack">
         <ServerDetails
           inspection={inspection}
-          browserDetails={<BrowserDetails />}
+          browserDetails={<BrowserDetails groups={["browser"]} />}
+          extendedBrowserDetails={<BrowserDetails groups={["device", "preferences"]} />}
           copyControl={
             inspection.publicIp.address === null ? undefined : (
               <CopyButton value={inspection.publicIp.address} label="Copy IP" />

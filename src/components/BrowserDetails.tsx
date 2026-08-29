@@ -10,7 +10,12 @@ import { KeyValueSection, type KeyValueItem } from "./KeyValueSection";
 
 type BrowserDetailsProps = {
   collect?: () => BrowserInspection;
+  groups?: readonly BrowserGroup[];
 };
+
+type BrowserGroup = "browser" | "device" | "preferences";
+
+const allBrowserGroups: readonly BrowserGroup[] = ["browser", "device", "preferences"];
 
 const browserLabels = [
   "User agent",
@@ -120,7 +125,10 @@ function inspectionItems(inspection: BrowserInspection): {
   };
 }
 
-export function BrowserDetails({ collect = collectBrowserInspection }: BrowserDetailsProps) {
+export function BrowserDetails({
+  collect = collectBrowserInspection,
+  groups = allBrowserGroups,
+}: BrowserDetailsProps) {
   const [inspection, setInspection] = useState<BrowserInspection | null>(null);
 
   useEffect(() => {
@@ -137,9 +145,13 @@ export function BrowserDetails({ collect = collectBrowserInspection }: BrowserDe
 
   return (
     <>
-      <KeyValueSection title="Browser" items={items.browser} />
-      <KeyValueSection title="Device and screen" items={items.device} />
-      <KeyValueSection title="Preferences and capabilities" items={items.preferences} />
+      {groups.includes("browser") && <KeyValueSection title="Browser" items={items.browser} />}
+      {groups.includes("device") && (
+        <KeyValueSection title="Device and screen" items={items.device} />
+      )}
+      {groups.includes("preferences") && (
+        <KeyValueSection title="Preferences and capabilities" items={items.preferences} />
+      )}
     </>
   );
 }

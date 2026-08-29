@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { HomeView } from "./HomeView";
@@ -49,22 +49,15 @@ const emptyInspection: ServerInspection = {
 describe("HomeView", () => {
   afterEach(cleanup);
 
-  it("renders the complete semantic page as vertically grouped sketched cards", async () => {
+  it("shows only the four primary information sections before disclosure opens", async () => {
     render(<HomeView inspection={emptyInspection} />);
 
-    expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
-      "whoami",
-      "Public IP",
-      "Network",
-      "Approximate location",
-      "Connection",
-      "TLS",
-      "Cloudflare",
-      "Browser",
-      "Device and screen",
-      "Preferences and capabilities",
-      "Request headers",
-    ]);
+    expect(
+      screen
+        .getAllByRole("heading")
+        .filter((heading) => heading.closest("details") === null)
+        .map((heading) => heading.textContent),
+    ).toEqual(["whoami", "Public IP", "Network", "Approximate location", "Browser"]);
 
     const banner = screen.getByRole("banner");
     expect(banner).toBeInTheDocument();
@@ -73,18 +66,6 @@ describe("HomeView", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("main")).toBeInTheDocument();
     expect(screen.getByRole("contentinfo")).toBeInTheDocument();
-    const sections = screen
-      .getAllByRole("heading")
-      .slice(1)
-      .map((heading) => heading.closest("section"));
-    expect(sections).toHaveLength(10);
-    for (const section of sections) {
-      expect(section).not.toBeNull();
-      expect(section?.querySelector("dl")).toBeInTheDocument();
-      expect(section?.querySelectorAll("dt").length).toBeGreaterThan(0);
-      expect(section?.querySelectorAll("dd").length).toBeGreaterThan(0);
-    }
-
     await waitFor(() => {
       expect(document.querySelectorAll(".drawably-card")).toHaveLength(10);
     });
@@ -92,10 +73,36 @@ describe("HomeView", () => {
       expect(heading).toHaveClass("sketch-heading");
     }
 
+    const summary = screen.getByText("More details");
+    const disclosure = summary.closest("details");
+    expect(disclosure).not.toBeNull();
+    expect(disclosure).not.toHaveAttribute("open");
+    expect(screen.getByRole("heading", { name: "Connection" })).not.toBeVisible();
+
     expect(
       screen.getByText("Approximate location derived from your public IP address."),
     ).toBeInTheDocument();
     expect(screen.getAllByText("Not available").length).toBeGreaterThan(0);
+  });
+
+  it("reveals the remaining information sections from More details", async () => {
+    render(<HomeView inspection={emptyInspection} />);
+
+    fireEvent.click(screen.getByText("More details"));
+
+    expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
+      "whoami",
+      "Public IP",
+      "Network",
+      "Approximate location",
+      "Browser",
+      "Connection",
+      "TLS",
+      "Cloudflare",
+      "Device and screen",
+      "Preferences and capabilities",
+      "Request headers",
+    ]);
   });
 
   it("integrates browser details and an IP copy control while retaining server links", async () => {
@@ -190,6 +197,8 @@ describe("HomeView", () => {
     expect(
       screen.queryByRole("link", { name: "View server data as JSON" }),
     ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("More details"));
 
     const requestHeaders = screen
       .getByRole("heading", { name: "Request headers", level: 2 })
