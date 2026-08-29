@@ -81,7 +81,6 @@ describe("ServerDetails", () => {
     fireEvent.click(screen.getByText("More details"));
 
     expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
-      "Public IP",
       "Network",
       "Approximate location",
       "Browser",
@@ -108,23 +107,24 @@ describe("ServerDetails", () => {
     expect(within(locationSection).getByText("Region")).toBeInTheDocument();
     expect(within(locationSection).getAllByText("Not available")).toHaveLength(1);
 
-    const publicIpHeading = screen.getByRole("heading", { name: "Public IP", level: 2 });
-    const publicIpSection = publicIpHeading.closest("section");
-    if (!publicIpSection) {
-      throw new Error("Public IP section was not rendered");
+    const networkHeading = screen.getByRole("heading", { name: "Network", level: 2 });
+    const networkSection = networkHeading.closest("section");
+    if (!networkSection) {
+      throw new Error("Network section was not rendered");
     }
-    const publicIpDl = publicIpSection.querySelector("dl");
-    const copyControl = within(publicIpSection).getByRole("button", {
+    expect(
+      Array.from(networkSection.querySelectorAll("dt")).map((term) => term.textContent),
+    ).toEqual(["IPv4 address", "ASN", "Organization"]);
+    const addressRow = within(networkSection).getByText("IPv4 address").closest("div");
+    if (!addressRow) {
+      throw new Error("IPv4 address row was not rendered");
+    }
+    const copyControl = within(addressRow).getByRole("button", {
       name: "Copy IP address",
     });
-    if (!publicIpDl) {
-      throw new Error("Public IP definition list was not rendered");
-    }
+    expect(copyControl).toBeInTheDocument();
     expect(
-      publicIpDl.compareDocumentPosition(copyControl) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
-    expect(
-      within(publicIpSection).queryByRole("link", { name: "View server data as JSON" }),
+      within(networkSection).queryByRole("link", { name: "View server data as JSON" }),
     ).not.toBeInTheDocument();
 
     const headerHeading = screen.getByRole("heading", { name: "Request headers", level: 2 });
@@ -135,5 +135,27 @@ describe("ServerDetails", () => {
     expect(
       Array.from(headerSection.querySelectorAll("dt")).map((term) => term.textContent),
     ).toEqual(Object.keys(inspection.headers));
+  });
+
+  it("labels an IPv6 connection in the merged Network section", () => {
+    render(
+      <ServerDetails
+        inspection={{
+          ...inspection,
+          publicIp: { address: "2001:db8::42", version: "IPv6" },
+        }}
+        browserDetails={null}
+        copyControl={<button type="button">Copy IP address</button>}
+      />,
+    );
+
+    const networkSection = screen
+      .getByRole("heading", { name: "Network", level: 2 })
+      .closest("section");
+    if (!networkSection) {
+      throw new Error("Network section was not rendered");
+    }
+    expect(within(networkSection).getByText("IPv6 address")).toBeInTheDocument();
+    expect(within(networkSection).queryByText("IPv4 address")).not.toBeInTheDocument();
   });
 });

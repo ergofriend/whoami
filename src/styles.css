@@ -170,11 +170,17 @@ a:focus-visible {
   line-height: 1.5;
 }
 
+.value-with-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.9rem;
+  align-items: center;
+}
+
 .copy-control {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  margin-top: 1.35rem;
 }
 
 .copy-button.drawably-button {
@@ -201,15 +207,6 @@ a:focus-visible {
 
 .site-footer p {
   margin: 0;
-}
-
-.site-footer nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem 1rem;
-  margin-bottom: 0.35rem;
-  color: #292720;
-  font-weight: 650;
 }
 
 @media (max-width: 40rem) {

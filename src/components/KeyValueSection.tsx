@@ -5,6 +5,7 @@ import { SketchCard, SketchUnderline } from "./Sketch";
 export type KeyValueItem = {
   label: string;
   value: string | number | null;
+  action?: ReactNode;
 };
 
 type KeyValueSectionProps = {
@@ -25,10 +26,13 @@ export function KeyValueSection({ title, description, items, children }: KeyValu
         </h2>
         {description !== undefined ? <p className="section-description">{description}</p> : null}
         <dl>
-          {items.map(({ label, value }) => (
+          {items.map(({ label, value, action }) => (
             <div key={label}>
               <dt>{label}</dt>
-              <dd>{value ?? "Not available"}</dd>
+              <dd className={action === undefined ? undefined : "value-with-action"}>
+                <span>{value ?? "Not available"}</span>
+                {action}
+              </dd>
             </div>
           ))}
         </dl>

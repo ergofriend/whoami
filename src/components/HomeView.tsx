@@ -19,7 +19,7 @@ export function HomeView({ inspection }: HomeViewProps) {
           See the network and browser information available to this site.
         </p>
         <a className="repository-link" href="https://github.com/ergofriend/whoami">
-          GitHub repository
+          Source on GitHub
         </a>
       </header>
       <main className="information-stack">
@@ -29,16 +29,12 @@ export function HomeView({ inspection }: HomeViewProps) {
           extendedBrowserDetails={<BrowserDetails groups={["device", "preferences"]} />}
           copyControl={
             inspection.publicIp.address === null ? undefined : (
-              <CopyButton value={inspection.publicIp.address} label="Copy IP" />
+              <CopyButton value={inspection.publicIp.address} label="Copy" />
             )
           }
         />
       </main>
       <footer className="site-footer">
-        <nav aria-label="Project links">
-          <a href="https://github.com/ergofriend/whoami">GitHub repository</a>
-          <a href="https://github.com/ergofriend/whoami/blob/main/LICENSE">MIT License</a>
-        </nav>
         <p>This site does not store the information displayed above.</p>
         <p>
           Browser details are processed only in your browser and are not sent back to this site.

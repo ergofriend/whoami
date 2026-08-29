@@ -49,7 +49,7 @@ const emptyInspection: ServerInspection = {
 describe("HomeView", () => {
   afterEach(cleanup);
 
-  it("shows only the four primary information sections before disclosure opens", async () => {
+  it("shows only the three primary information sections before disclosure opens", async () => {
     render(<HomeView inspection={emptyInspection} />);
 
     expect(
@@ -57,7 +57,7 @@ describe("HomeView", () => {
         .getAllByRole("heading")
         .filter((heading) => heading.closest("details") === null)
         .map((heading) => heading.textContent),
-    ).toEqual(["whoami", "Public IP", "Network", "Approximate location", "Browser"]);
+    ).toEqual(["whoami", "Network", "Approximate location", "Browser"]);
 
     const banner = screen.getByRole("banner");
     expect(banner).toBeInTheDocument();
@@ -67,7 +67,7 @@ describe("HomeView", () => {
     expect(screen.getByRole("main")).toBeInTheDocument();
     expect(screen.getByRole("contentinfo")).toBeInTheDocument();
     await waitFor(() => {
-      expect(document.querySelectorAll(".drawably-card")).toHaveLength(10);
+      expect(document.querySelectorAll(".drawably-card")).toHaveLength(9);
     });
     for (const heading of screen.getAllByRole("heading")) {
       expect(heading).toHaveClass("sketch-heading");
@@ -78,6 +78,7 @@ describe("HomeView", () => {
     expect(disclosure).not.toBeNull();
     expect(disclosure).not.toHaveAttribute("open");
     expect(screen.getByRole("heading", { name: "Connection" })).not.toBeVisible();
+    expect(screen.queryByRole("button", { name: "Copy" })).not.toBeInTheDocument();
 
     expect(
       screen.getByText("Approximate location derived from your public IP address."),
@@ -92,7 +93,6 @@ describe("HomeView", () => {
 
     expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
       "whoami",
-      "Public IP",
       "Network",
       "Approximate location",
       "Browser",
@@ -169,14 +169,26 @@ describe("HomeView", () => {
     }
 
     expect(await screen.findByText(navigator.userAgent)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Copy IP" })).toBeInTheDocument();
+    const networkSection = screen
+      .getByRole("heading", { name: "Network", level: 2 })
+      .closest("section");
+    if (!networkSection) {
+      throw new Error("Network section was not rendered");
+    }
+    expect(
+      Array.from(networkSection.querySelectorAll("dt")).map((term) => term.textContent),
+    ).toEqual(["IPv4 address", "ASN", "Organization"]);
+    const addressRow = within(networkSection).getByText("IPv4 address").closest("div");
+    if (!addressRow) {
+      throw new Error("IPv4 address row was not rendered");
+    }
+    expect(within(addressRow).getByRole("button", { name: "Copy" })).toBeInTheDocument();
 
-    const repositoryLinks = screen.getAllByRole("link", { name: "GitHub repository" });
-    expect(repositoryLinks).toHaveLength(2);
-    expect(repositoryLinks.map((link) => link.getAttribute("href"))).toEqual([
+    expect(screen.getByRole("link", { name: "Source on GitHub" })).toHaveAttribute(
+      "href",
       "https://github.com/ergofriend/whoami",
-      "https://github.com/ergofriend/whoami",
-    ]);
+    );
+    expect(screen.queryByRole("link", { name: "GitHub repository" })).not.toBeInTheDocument();
     expect(
       screen.getByText("This site does not store the information displayed above."),
     ).toBeInTheDocument();
@@ -190,10 +202,7 @@ describe("HomeView", () => {
         "Cloudflare Web Analytics is used for privacy-focused performance and visit analytics.",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "MIT License" })).toHaveAttribute(
-      "href",
-      "https://github.com/ergofriend/whoami/blob/main/LICENSE",
-    );
+    expect(screen.queryByRole("link", { name: "MIT License" })).not.toBeInTheDocument();
     expect(
       screen.queryByRole("link", { name: "View server data as JSON" }),
     ).not.toBeInTheDocument();

@@ -25,18 +25,16 @@ export function ServerDetails({
   return (
     <>
       <KeyValueSection
-        title="Public IP"
-        items={[
-          { label: "IP address", value: inspection.publicIp.address },
-          { label: "IP version", value: inspection.publicIp.version },
-        ]}
-      >
-        {copyControl}
-      </KeyValueSection>
-
-      <KeyValueSection
         title="Network"
         items={[
+          {
+            label:
+              inspection.publicIp.version === null
+                ? "IP address"
+                : `${inspection.publicIp.version} address`,
+            value: inspection.publicIp.address,
+            action: copyControl,
+          },
           { label: "ASN", value: inspection.network.asn },
           { label: "Organization", value: inspection.network.organization },
         ]}
