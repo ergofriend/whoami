@@ -88,8 +88,15 @@ describe('HomeView', () => {
     expect(screen.getAllByText('Not available').length).toBeGreaterThan(0);
   });
 
-  it('uses temporary unsupported values for all browser groups and has two repository links', () => {
-    render(<HomeView inspection={emptyInspection} />);
+  it('integrates browser details and an IP copy control while retaining server links', async () => {
+    render(
+      <HomeView
+        inspection={{
+          ...emptyInspection,
+          publicIp: { address: '203.0.113.42', version: 'IPv4' },
+        }}
+      />,
+    );
 
     const expectedBrowserGroups = [
       ['Browser', [
@@ -131,10 +138,10 @@ describe('HomeView', () => {
         throw new Error(`${title} section was not rendered`);
       }
       expect(Array.from(section.querySelectorAll('dt')).map((term) => term.textContent)).toEqual(labels);
-      expect(Array.from(section.querySelectorAll('dd')).map((definition) => definition.textContent)).toEqual(
-        labels.map(() => 'Not supported'),
-      );
     }
+
+    expect(await screen.findByText(navigator.userAgent)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Copy IP' })).toBeInTheDocument();
 
     const repositoryLinks = screen.getAllByRole('link', { name: 'GitHub repository' });
     expect(repositoryLinks).toHaveLength(2);
