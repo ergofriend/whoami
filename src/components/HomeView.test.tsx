@@ -1,10 +1,22 @@
 // @vitest-environment jsdom
 
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import { HomeView } from "./HomeView";
 import type { ServerInspection } from "../features/server/server-inspection";
+
+let stylesheet: HTMLStyleElement;
+
+beforeAll(() => {
+  stylesheet = document.createElement("style");
+  stylesheet.textContent = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+  document.head.appendChild(stylesheet);
+});
+
+afterAll(() => stylesheet.remove());
 
 const emptyInspection: ServerInspection = {
   publicIp: { address: null, version: null },
@@ -103,6 +115,19 @@ describe("HomeView", () => {
       "Preferences and capabilities",
       "Request headers",
     ]);
+  });
+
+  it("pins the source badge diagonally to the header's upper-right corner", () => {
+    render(<HomeView inspection={emptyInspection} />);
+
+    const sourceCallout = screen.getByText("open source").parentElement;
+    expect(sourceCallout).not.toBeNull();
+    expect(getComputedStyle(sourceCallout!)).toMatchObject({
+      position: "absolute",
+      right: "0px",
+      transform: "rotate(5deg)",
+    });
+    expect(getComputedStyle(screen.getByRole("banner"))).toMatchObject({ position: "relative" });
   });
 
   it("integrates browser details and an IP copy control while retaining server links", async () => {

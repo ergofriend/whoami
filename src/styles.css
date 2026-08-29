@@ -56,6 +56,7 @@ a:focus-visible {
 }
 
 .site-header {
+  position: relative;
   margin-bottom: 3rem;
 }
 
@@ -74,11 +75,15 @@ a:focus-visible {
 }
 
 .source-callout {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.4rem;
   width: fit-content;
+  transform: rotate(5deg);
 }
 
 .source-label {
@@ -236,6 +241,11 @@ a:focus-visible {
 
   .site-header {
     margin-bottom: 2.25rem;
+  }
+
+  .source-callout {
+    position: static;
+    transform: rotate(3deg);
   }
 
   .information-stack {
