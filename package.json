@@ -7,6 +7,7 @@
     "dev": "waku dev",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
+    "pretypecheck": "wrangler types",
     "typecheck": "tsc --noEmit",
     "build": "waku build",
     "check": "npm run test && npm run typecheck && npm run build",
