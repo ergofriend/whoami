@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 export type KeyValueItem = {
   label: string;
@@ -12,13 +12,8 @@ type KeyValueSectionProps = {
   children?: ReactNode;
 };
 
-export function KeyValueSection({
-  title,
-  description,
-  items,
-  children,
-}: KeyValueSectionProps) {
-  const headingId = title.toLowerCase().replace(/\s+/g, '-');
+export function KeyValueSection({ title, description, items, children }: KeyValueSectionProps) {
+  const headingId = title.toLowerCase().replace(/\s+/g, "-");
 
   return (
     <section aria-labelledby={headingId}>
@@ -28,7 +23,7 @@ export function KeyValueSection({
         {items.map(({ label, value }) => (
           <div key={label}>
             <dt>{label}</dt>
-            <dd>{value ?? 'Not available'}</dd>
+            <dd>{value ?? "Not available"}</dd>
           </div>
         ))}
       </dl>

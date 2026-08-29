@@ -1,16 +1,19 @@
 {
   "name": "fs-router-cloudflare",
   "version": "0.1.0",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "waku dev",
+    "lint": "oxlint --deny-warnings .",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "pretypecheck": "wrangler types",
     "typecheck": "tsc --noEmit",
     "build": "waku build",
-    "check": "npm run test && npm run typecheck && npm run build",
+    "check": "npm run format:check && npm run lint && npm run test && npm run typecheck && npm run build",
     "deploy": "npm run build && wrangler deploy",
     "deploy:dry-run": "npm run build && wrangler deploy --dry-run"
   },
@@ -36,6 +39,8 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "jsdom": "29.0.1",
     "miniflare": "^4.20260721.0",
+    "oxfmt": "0.65.0",
+    "oxlint": "1.80.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"

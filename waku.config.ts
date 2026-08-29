@@ -1,29 +1,29 @@
-import { cloudflare } from '@cloudflare/vite-plugin';
-import babel from '@rolldown/plugin-babel';
-import tailwindcss from '@tailwindcss/vite';
-import react, { reactCompilerPreset } from '@vitejs/plugin-react';
-import { defineConfig } from 'waku/config';
+import { cloudflare } from "@cloudflare/vite-plugin";
+import babel from "@rolldown/plugin-babel";
+import tailwindcss from "@tailwindcss/vite";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import { defineConfig } from "waku/config";
 
 export default defineConfig({
   vite: {
     environments: {
       rsc: {
         optimizeDeps: {
-          include: ['hono/tiny'],
+          include: ["hono/tiny"],
         },
         build: {
           rolldownOptions: {
-            platform: 'neutral',
+            platform: "neutral",
           },
         },
       },
       ssr: {
         optimizeDeps: {
-          include: ['waku > rsc-html-stream/server'],
+          include: ["waku > rsc-html-stream/server"],
         },
         build: {
           rolldownOptions: {
-            platform: 'neutral',
+            platform: "neutral",
           },
         },
       },
@@ -33,7 +33,7 @@ export default defineConfig({
       react(),
       babel({ presets: [reactCompilerPreset()] }),
       cloudflare({
-        viteEnvironment: { name: 'rsc', childEnvironments: ['ssr'] },
+        viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
         inspectorPort: false,
       }),
     ],

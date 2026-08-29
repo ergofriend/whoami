@@ -1,72 +1,72 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 import {
   collectBrowserInspection,
   type BrowserInspection,
-} from '../features/browser/browser-inspection';
-import { KeyValueSection, type KeyValueItem } from './KeyValueSection';
+} from "../features/browser/browser-inspection";
+import { KeyValueSection, type KeyValueItem } from "./KeyValueSection";
 
 type BrowserDetailsProps = {
   collect?: () => BrowserInspection;
 };
 
 const browserLabels = [
-  'User agent',
-  'Browser languages',
-  'Browser timezone',
-  'UTC offset',
-  'Cookies enabled',
-  'Do Not Track',
-  'Platform',
+  "User agent",
+  "Browser languages",
+  "Browser timezone",
+  "UTC offset",
+  "Cookies enabled",
+  "Do Not Track",
+  "Platform",
 ] as const;
 
 const deviceLabels = [
-  'Screen size',
-  'Available screen size',
-  'Viewport size',
-  'Device pixel ratio',
-  'Color depth',
-  'Pixel depth',
-  'Maximum touch points',
-  'Logical processors',
-  'Device memory',
+  "Screen size",
+  "Available screen size",
+  "Viewport size",
+  "Device pixel ratio",
+  "Color depth",
+  "Pixel depth",
+  "Maximum touch points",
+  "Logical processors",
+  "Device memory",
 ] as const;
 
 const preferenceLabels = [
-  'Preferred color scheme',
-  'Reduced motion',
-  'Contrast preference',
-  'Online',
-  'Effective connection type',
-  'Downlink',
-  'Round-trip time',
-  'Data saver',
+  "Preferred color scheme",
+  "Reduced motion",
+  "Contrast preference",
+  "Online",
+  "Effective connection type",
+  "Downlink",
+  "Round-trip time",
+  "Data saver",
 ] as const;
 
 function unsupportedItems(labels: readonly string[]): KeyValueItem[] {
-  return labels.map((label) => ({ label, value: 'Not supported' }));
+  return labels.map((label) => ({ label, value: "Not supported" }));
 }
 
 function readable(value: string | number | boolean | null | string[]): string {
-  if (value === null) return 'Not supported';
-  if (Array.isArray(value)) return value.length === 0 ? 'Not supported' : value.join(', ');
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-  return value === '' ? 'Not supported' : String(value);
+  if (value === null) return "Not supported";
+  if (Array.isArray(value)) return value.length === 0 ? "Not supported" : value.join(", ");
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  return value === "" ? "Not supported" : String(value);
 }
 
 function formatUtcOffset(minutes: number | null): string {
-  if (minutes === null) return 'Not supported';
+  if (minutes === null) return "Not supported";
   const absoluteMinutes = Math.abs(minutes);
   const hours = Math.floor(absoluteMinutes / 60);
   const remainingMinutes = absoluteMinutes % 60;
-  const sign = minutes <= 0 ? '+' : '-';
-  return `UTC${sign}${String(hours).padStart(2, '0')}:${String(remainingMinutes).padStart(2, '0')}`;
+  const sign = minutes <= 0 ? "+" : "-";
+  return `UTC${sign}${String(hours).padStart(2, "0")}:${String(remainingMinutes).padStart(2, "0")}`;
 }
 
 function formatMeasurement(value: number | null, unit: string): string {
-  return value === null ? 'Not supported' : `${value} ${unit}`;
+  return value === null ? "Not supported" : `${value} ${unit}`;
 }
 
 function inspectionItems(inspection: BrowserInspection): {
@@ -95,7 +95,7 @@ function inspectionItems(inspection: BrowserInspection): {
       { label: deviceLabels[7], value: readable(inspection.device.logicalProcessors) },
       {
         label: deviceLabels[8],
-        value: formatMeasurement(inspection.device.deviceMemoryGiB, 'GiB'),
+        value: formatMeasurement(inspection.device.deviceMemoryGiB, "GiB"),
       },
     ],
     preferences: [
@@ -103,14 +103,17 @@ function inspectionItems(inspection: BrowserInspection): {
       { label: preferenceLabels[1], value: readable(inspection.preferences.reducedMotion) },
       { label: preferenceLabels[2], value: readable(inspection.preferences.contrast) },
       { label: preferenceLabels[3], value: readable(inspection.preferences.online) },
-      { label: preferenceLabels[4], value: readable(inspection.preferences.effectiveConnectionType) },
+      {
+        label: preferenceLabels[4],
+        value: readable(inspection.preferences.effectiveConnectionType),
+      },
       {
         label: preferenceLabels[5],
-        value: formatMeasurement(inspection.preferences.downlinkMbps, 'Mbps'),
+        value: formatMeasurement(inspection.preferences.downlinkMbps, "Mbps"),
       },
       {
         label: preferenceLabels[6],
-        value: formatMeasurement(inspection.preferences.rttMs, 'ms'),
+        value: formatMeasurement(inspection.preferences.rttMs, "ms"),
       },
       { label: preferenceLabels[7], value: readable(inspection.preferences.saveData) },
     ],

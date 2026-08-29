@@ -1,4 +1,4 @@
-import { createApiResponse } from '../../features/server/api-response';
+import { createApiResponse } from "../../features/server/api-response";
 
 export const GET = (request: Request) => createApiResponse(request);
 

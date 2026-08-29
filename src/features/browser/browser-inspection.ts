@@ -22,9 +22,9 @@ export type BrowserInspection = {
     deviceMemoryGiB: Nullable<number>;
   };
   preferences: {
-    colorScheme: Nullable<'light' | 'dark'>;
+    colorScheme: Nullable<"light" | "dark">;
     reducedMotion: Nullable<boolean>;
-    contrast: Nullable<'more' | 'less'>;
+    contrast: Nullable<"more" | "less">;
     online: Nullable<boolean>;
     effectiveConnectionType: Nullable<string>;
     downlinkMbps: Nullable<number>;
@@ -53,9 +53,9 @@ export type BrowserSource = {
   maxTouchPoints: () => number;
   logicalProcessors: () => Nullable<number>;
   deviceMemoryGiB: () => Nullable<number>;
-  colorScheme: () => Nullable<'light' | 'dark'>;
+  colorScheme: () => Nullable<"light" | "dark">;
   reducedMotion: () => Nullable<boolean>;
-  contrast: () => Nullable<'more' | 'less'>;
+  contrast: () => Nullable<"more" | "less">;
   online: () => boolean;
   effectiveConnectionType: () => Nullable<string>;
   downlinkMbps: () => Nullable<number>;
@@ -100,11 +100,11 @@ export function createBrowserSource(): BrowserSource {
     maxTouchPoints: () => browserNavigator.maxTouchPoints,
     logicalProcessors: () => browserNavigator.hardwareConcurrency ?? null,
     deviceMemoryGiB: () => browserNavigator.deviceMemory ?? null,
-    colorScheme: () => (readMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light'),
-    reducedMotion: () => readMediaQuery('(prefers-reduced-motion: reduce)'),
+    colorScheme: () => (readMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light"),
+    reducedMotion: () => readMediaQuery("(prefers-reduced-motion: reduce)"),
     contrast: () => {
-      if (readMediaQuery('(prefers-contrast: more)')) return 'more';
-      return readMediaQuery('(prefers-contrast: less)') ? 'less' : null;
+      if (readMediaQuery("(prefers-contrast: more)")) return "more";
+      return readMediaQuery("(prefers-contrast: less)") ? "less" : null;
     },
     online: () => browserNavigator.onLine,
     effectiveConnectionType: () => browserNavigator.connection?.effectiveType ?? null,
@@ -126,33 +126,31 @@ function readSupported<T>(read: () => unknown, guard: Guard<T>): Nullable<T> {
 }
 
 function isBoolean(value: unknown): value is boolean {
-  return typeof value === 'boolean';
+  return typeof value === "boolean";
 }
 
 function isFiniteNumber(value: unknown): value is number {
-  return typeof value === 'number' && Number.isFinite(value);
+  return typeof value === "number" && Number.isFinite(value);
 }
 
 function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0;
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 function isLanguageList(value: unknown): value is string[] {
   return Array.isArray(value) && value.length > 0 && value.every(isNonEmptyString);
 }
 
-function isColorScheme(value: unknown): value is 'light' | 'dark' {
-  return value === 'light' || value === 'dark';
+function isColorScheme(value: unknown): value is "light" | "dark" {
+  return value === "light" || value === "dark";
 }
 
-function isContrast(value: unknown): value is 'more' | 'less' {
-  return value === 'more' || value === 'less';
+function isContrast(value: unknown): value is "more" | "less" {
+  return value === "more" || value === "less";
 }
 
 function formatSize(width: Nullable<number>, height: Nullable<number>): Nullable<string> {
-  return typeof width === 'number' && typeof height === 'number'
-    ? `${width} × ${height}`
-    : null;
+  return typeof width === "number" && typeof height === "number" ? `${width} × ${height}` : null;
 }
 
 export function collectBrowserInspection(source = createBrowserSource()): BrowserInspection {
@@ -191,10 +189,7 @@ export function collectBrowserInspection(source = createBrowserSource()): Browse
       reducedMotion: readSupported(source.reducedMotion, isBoolean),
       contrast: readSupported(source.contrast, isContrast),
       online: readSupported(source.online, isBoolean),
-      effectiveConnectionType: readSupported(
-        source.effectiveConnectionType,
-        isNonEmptyString,
-      ),
+      effectiveConnectionType: readSupported(source.effectiveConnectionType, isNonEmptyString),
       downlinkMbps: readSupported(source.downlinkMbps, isFiniteNumber),
       rttMs: readSupported(source.rttMs, isFiniteNumber),
       saveData: readSupported(source.saveData, isBoolean),

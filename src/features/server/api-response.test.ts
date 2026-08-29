@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
 
-import type { ServerInspection } from './server-inspection';
-import { createApiResponse } from './api-response';
+import type { ServerInspection } from "./server-inspection";
+import { createApiResponse } from "./api-response";
 
 const inspection: ServerInspection = {
   schemaVersion: 1,
@@ -30,52 +30,49 @@ const inspection: ServerInspection = {
   cloudflare: { colo: null, rayId: null },
   headers: {
     Accept: null,
-    'Accept-Encoding': null,
-    'Accept-Language': null,
-    'CF-Connecting-IP': null,
-    'CF-IPCountry': null,
-    'CF-Ray': null,
+    "Accept-Encoding": null,
+    "Accept-Language": null,
+    "CF-Connecting-IP": null,
+    "CF-IPCountry": null,
+    "CF-Ray": null,
     Host: null,
-    'Sec-CH-UA': null,
-    'Sec-CH-UA-Mobile': null,
-    'Sec-CH-UA-Platform': null,
-    'Upgrade-Insecure-Requests': null,
-    'User-Agent': null,
-    'X-Forwarded-Proto': null,
+    "Sec-CH-UA": null,
+    "Sec-CH-UA-Mobile": null,
+    "Sec-CH-UA-Platform": null,
+    "Upgrade-Insecure-Requests": null,
+    "User-Agent": null,
+    "X-Forwarded-Proto": null,
   },
 };
 
-describe('createApiResponse', () => {
-  it('returns the injected inspection as non-cacheable JSON without CORS', async () => {
+describe("createApiResponse", () => {
+  it("returns the injected inspection as non-cacheable JSON without CORS", async () => {
     const response = createApiResponse(
-      new Request('https://whoami.kasu.dev/api.json'),
+      new Request("https://whoami.kasu.dev/api.json"),
       () => inspection,
     );
 
     expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toBe('application/json; charset=utf-8');
-    expect(response.headers.get('cache-control')).toBe('no-store');
-    expect(response.headers.has('access-control-allow-origin')).toBe(false);
+    expect(response.headers.get("content-type")).toBe("application/json; charset=utf-8");
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.has("access-control-allow-origin")).toBe(false);
     expect(await response.json()).toMatchObject({ schemaVersion: 1 });
   });
 
-  it('returns a fixed error body without exposing inspector failures', async () => {
-    const response = createApiResponse(
-      new Request('https://whoami.kasu.dev/api.json'),
-      () => {
-        throw new Error('secret stack');
-      },
-    );
+  it("returns a fixed error body without exposing inspector failures", async () => {
+    const response = createApiResponse(new Request("https://whoami.kasu.dev/api.json"), () => {
+      throw new Error("secret stack");
+    });
     const bodyText = await response.text();
 
     expect(response.status).toBe(500);
     expect(JSON.parse(bodyText)).toEqual({
       schemaVersion: 1,
       error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Unable to inspect this request.',
+        code: "INTERNAL_ERROR",
+        message: "Unable to inspect this request.",
       },
     });
-    expect(bodyText).not.toContain('secret stack');
+    expect(bodyText).not.toContain("secret stack");
   });
 });

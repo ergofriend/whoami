@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 type CopyButtonProps = {
   value: string;
@@ -8,21 +8,25 @@ type CopyButtonProps = {
 };
 
 export function CopyButton({ value, label }: CopyButtonProps) {
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState("");
 
   async function copy() {
     try {
       await navigator.clipboard.writeText(value);
-      setStatus('Copied.');
+      setStatus("Copied.");
     } catch {
-      setStatus('Copy failed.');
+      setStatus("Copy failed.");
     }
   }
 
   return (
     <>
-      <button type="button" onClick={() => void copy()}>{label}</button>
-      <p role="status" aria-live="polite">{status}</p>
+      <button type="button" onClick={() => void copy()}>
+        {label}
+      </button>
+      <p role="status" aria-live="polite">
+        {status}
+      </p>
     </>
   );
 }
