@@ -7,6 +7,7 @@ dist
 *.pem
 .wrangler
 worker-configuration.d.ts
+src/pages.gen.ts
 
 /.superpowers/
 /docs/superpowers/
