@@ -3,6 +3,16 @@
 import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { drawablyButton, drawablyCard, drawablyUnderline } from "drawably";
 
+const sketchClasses = {
+  card: "drawably-host drawably-card",
+  underline: "drawably-host drawably-underline",
+  button: "drawably-host drawably-button drawably-button--outline",
+} as const;
+
+function classNames(...names: Array<string | undefined>): string {
+  return names.filter(Boolean).join(" ");
+}
+
 export function SketchCard({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -13,7 +23,7 @@ export function SketchCard({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div ref={ref} className="information-card">
+    <div ref={ref} className={classNames("information-card", sketchClasses.card)}>
       {children}
     </div>
   );
@@ -32,7 +42,11 @@ export function SketchUnderline({ children }: { children: ReactNode }) {
     return () => sketch.destroy();
   }, []);
 
-  return <span ref={ref}>{children}</span>;
+  return (
+    <span ref={ref} className={sketchClasses.underline}>
+      {children}
+    </span>
+  );
 }
 
 type SketchButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
@@ -47,7 +61,12 @@ export function SketchButton({ children, className, ...props }: SketchButtonProp
   }, []);
 
   return (
-    <button ref={ref} type="button" className={className} {...props}>
+    <button
+      ref={ref}
+      type="button"
+      className={classNames(sketchClasses.button, className)}
+      {...props}
+    >
       {children}
     </button>
   );

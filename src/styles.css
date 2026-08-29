@@ -1,6 +1,6 @@
 :root {
   color-scheme: light;
-  font-family: "Inter Variable", Inter, system-ui, sans-serif;
+  font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
   color: #292720;
   background: #f5efe2;
   font-synthesis: none;
@@ -30,7 +30,7 @@ body {
 
 body,
 button {
-  font-family: "Inter Variable", Inter, system-ui, sans-serif;
+  font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
 }
 
 a {
@@ -119,6 +119,11 @@ a:focus-visible {
   background: rgb(255 250 240 / 88%);
 }
 
+.information-card.drawably-host,
+.sketch-heading .drawably-host {
+  font-family: inherit;
+}
+
 .information-card section {
   min-width: 0;
 }
@@ -160,7 +165,7 @@ a:focus-visible {
   min-width: 0;
   margin: 0;
   overflow-wrap: anywhere;
-  font-family: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-family: "Inter Variable", Inter, system-ui, sans-serif;
   font-size: 0.9rem;
   line-height: 1.5;
 }
