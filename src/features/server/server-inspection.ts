@@ -4,7 +4,6 @@ export const ALLOWED_REQUEST_HEADERS = [
   "Accept-Language",
   "CF-Connecting-IP",
   "CF-IPCountry",
-  "CF-Ray",
   "Host",
   "Sec-CH-UA",
   "Sec-CH-UA-Mobile",
@@ -44,7 +43,7 @@ export type ServerInspection = {
     cipher: Nullable<string>;
     clientHelloLength: Nullable<string>;
   };
-  cloudflare: { colo: Nullable<string>; rayId: Nullable<string> };
+  cloudflare: { colo: Nullable<string> };
   headers: Record<AllowedHeader, Nullable<string>>;
 };
 
@@ -168,7 +167,6 @@ export function buildServerInspection(request: Request): ServerInspection {
     },
     cloudflare: {
       colo: nullableString(cloudflare?.colo),
-      rayId: nullableString(request.headers.get("CF-Ray")),
     },
     headers,
   };

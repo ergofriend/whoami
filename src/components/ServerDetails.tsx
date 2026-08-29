@@ -74,10 +74,7 @@ export function ServerDetails({ inspection, browserDetails, copyControl }: Serve
 
       <KeyValueSection
         title="Cloudflare"
-        items={[
-          { label: "Data center", value: inspection.cloudflare.colo },
-          { label: "Ray ID", value: inspection.cloudflare.rayId },
-        ]}
+        items={[{ label: "Data center", value: inspection.cloudflare.colo }]}
       />
 
       {browserDetails}

@@ -65,7 +65,8 @@ describe("buildServerInspection", () => {
     expect(result.location.region).toBeNull();
     expect(result.connection.httpProtocol).toBe("HTTP/3");
     expect(result.tls.version).toBe("TLSv1.3");
-    expect(result.cloudflare).toEqual({ colo: "NRT", rayId: "8a1234567890abcd-NRT" });
+    expect(result.cloudflare).toEqual({ colo: "NRT" });
+    expect(result.headers).not.toHaveProperty("CF-Ray");
     expect(result.headers["User-Agent"]).toBe("whoami-test-agent/1.0");
     expect(JSON.stringify(result)).not.toContain("secret-");
     expect(Object.keys(result.headers)).toEqual(ALLOWED_REQUEST_HEADERS);

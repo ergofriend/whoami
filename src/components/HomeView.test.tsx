@@ -29,14 +29,13 @@ const emptyInspection: ServerInspection = {
     quicRttMs: null,
   },
   tls: { version: null, cipher: null, clientHelloLength: null },
-  cloudflare: { colo: null, rayId: null },
+  cloudflare: { colo: null },
   headers: {
     Accept: null,
     "Accept-Encoding": null,
     "Accept-Language": null,
     "CF-Connecting-IP": null,
     "CF-IPCountry": null,
-    "CF-Ray": null,
     Host: null,
     "Sec-CH-UA": null,
     "Sec-CH-UA-Mobile": null,
@@ -193,6 +192,6 @@ describe("HomeView", () => {
     if (!requestHeaders) {
       throw new Error("Request headers section was not rendered");
     }
-    expect(within(requestHeaders).getAllByText("Not available").length).toBe(13);
+    expect(within(requestHeaders).getAllByText("Not available").length).toBe(12);
   });
 });
