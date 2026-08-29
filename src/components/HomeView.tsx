@@ -2,7 +2,7 @@ import type { ServerInspection } from "../features/server/server-inspection";
 import { BrowserDetails } from "./BrowserDetails";
 import { CopyButton } from "./CopyButton";
 import { ServerDetails } from "./ServerDetails";
-import { SketchUnderline } from "./Sketch";
+import { SketchBadgeLink, SketchUnderline } from "./Sketch";
 
 type HomeViewProps = {
   inspection: ServerInspection;
@@ -18,9 +18,12 @@ export function HomeView({ inspection }: HomeViewProps) {
         <p className="site-intro">
           See the network and browser information available to this site.
         </p>
-        <a className="repository-link" href="https://github.com/ergofriend/whoami">
-          Source on GitHub
-        </a>
+        <div className="source-callout">
+          <span className="source-label">open source</span>
+          <SketchBadgeLink className="repository-link" href="https://github.com/ergofriend/whoami">
+            Source on GitHub <span aria-hidden="true">↗</span>
+          </SketchBadgeLink>
+        </div>
       </header>
       <main className="information-stack">
         <ServerDetails

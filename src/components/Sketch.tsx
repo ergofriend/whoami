@@ -1,12 +1,19 @@
 "use client";
 
-import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from "react";
-import { drawablyButton, drawablyCard, drawablyUnderline } from "drawably";
+import {
+  useEffect,
+  useRef,
+  type AnchorHTMLAttributes,
+  type ButtonHTMLAttributes,
+  type ReactNode,
+} from "react";
+import { drawablyBadge, drawablyButton, drawablyCard, drawablyUnderline } from "drawably";
 
 const sketchClasses = {
   card: "drawably-host drawably-card",
   underline: "drawably-host drawably-underline",
   button: "drawably-host drawably-button drawably-button--outline",
+  badge: "drawably-host drawably-badge drawably-badge--outline",
 } as const;
 
 function classNames(...names: Array<string | undefined>): string {
@@ -69,5 +76,27 @@ export function SketchButton({ children, className, ...props }: SketchButtonProp
     >
       {children}
     </button>
+  );
+}
+
+type SketchBadgeLinkProps = AnchorHTMLAttributes<HTMLAnchorElement>;
+
+export function SketchBadgeLink({ children, className, ...props }: SketchBadgeLinkProps) {
+  const ref = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    if (ref.current === null) return;
+    const sketch = drawablyBadge(ref.current, {
+      variant: "outline",
+      roughness: 0.9,
+      boil: 0,
+    });
+    return () => sketch.destroy();
+  }, []);
+
+  return (
+    <a ref={ref} className={classNames(sketchClasses.badge, className)} {...props}>
+      {children}
+    </a>
   );
 }

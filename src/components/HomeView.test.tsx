@@ -184,10 +184,16 @@ describe("HomeView", () => {
     }
     expect(within(addressRow).getByRole("button", { name: "Copy" })).toBeInTheDocument();
 
-    expect(screen.getByRole("link", { name: "Source on GitHub" })).toHaveAttribute(
-      "href",
-      "https://github.com/ergofriend/whoami",
+    expect(screen.getByText("open source")).toBeInTheDocument();
+    const sourceLink = screen.getByRole("link", { name: "Source on GitHub" });
+    expect(sourceLink).toHaveAttribute("href", "https://github.com/ergofriend/whoami");
+    expect(sourceLink).toHaveClass(
+      "repository-link",
+      "drawably-host",
+      "drawably-badge",
+      "drawably-badge--outline",
     );
+    expect(within(sourceLink).getByText("↗")).toHaveAttribute("aria-hidden", "true");
     expect(screen.queryByRole("link", { name: "GitHub repository" })).not.toBeInTheDocument();
     expect(
       screen.getByText("This site does not store the information displayed above."),
