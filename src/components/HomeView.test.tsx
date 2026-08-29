@@ -218,7 +218,10 @@ describe("HomeView", () => {
       "drawably-badge",
       "drawably-badge--outline",
     );
-    expect(within(sourceLink).getByText("↗")).toHaveAttribute("aria-hidden", "true");
+    expect(
+      sourceLink.querySelector("svg[viewBox='0 0 16 16'][aria-hidden='true']"),
+    ).toBeInTheDocument();
+    expect(within(sourceLink).queryByText("↗")).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "GitHub repository" })).not.toBeInTheDocument();
     expect(
       screen.getByText("This site does not store the information displayed above."),

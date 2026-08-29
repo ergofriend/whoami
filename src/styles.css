@@ -93,6 +93,9 @@ a:focus-visible {
 }
 
 .repository-link.drawably-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   padding: 0.55rem 0.9rem;
   font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
   font-size: 1.15rem;
