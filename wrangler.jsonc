@@ -4,6 +4,7 @@
   "main": "./src/waku.server",
   "compatibility_date": "2026-08-29",
   "compatibility_flags": ["nodejs_als"],
+  "routes": [{ "pattern": "whoami.kasu.dev", "custom_domain": true }],
   "observability": { "enabled": false },
   "assets": {
     "binding": "ASSETS",
