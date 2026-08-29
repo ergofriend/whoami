@@ -248,7 +248,7 @@ a:focus-visible {
 
   .source-callout {
     position: static;
-    transform: rotate(3deg);
+    transform: none;
   }
 
   .information-stack {
