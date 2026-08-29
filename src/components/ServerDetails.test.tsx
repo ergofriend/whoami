@@ -8,7 +8,6 @@ import { ServerDetails } from "./ServerDetails";
 import type { ServerInspection } from "../features/server/server-inspection";
 
 const inspection: ServerInspection = {
-  schemaVersion: 1,
   publicIp: { address: "203.0.113.42", version: "IPv4" },
   network: { asn: 64500, organization: "Example Network" },
   location: {
@@ -117,8 +116,8 @@ describe("ServerDetails", () => {
       publicIpDl.compareDocumentPosition(copyControl) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
     expect(
-      within(publicIpSection).getByRole("link", { name: "View server data as JSON" }),
-    ).toHaveAttribute("href", "/api.json");
+      within(publicIpSection).queryByRole("link", { name: "View server data as JSON" }),
+    ).not.toBeInTheDocument();
 
     const headerHeading = screen.getByRole("heading", { name: "Request headers", level: 2 });
     const headerSection = headerHeading.closest("section");

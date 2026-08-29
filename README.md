@@ -29,19 +29,6 @@ npm run build
 npm run deploy:dry-run
 ```
 
-## JSON API
-
-`GET /api.json` returns only server-observed data with `schemaVersion: 1` and
-`Cache-Control: no-store`. It intentionally does not enable CORS.
-
-```powershell
-curl.exe -fsS https://whoami.kasu.dev/api.json
-```
-
-Missing values remain present as JSON `null`. The response contains these
-top-level keys in addition to `schemaVersion`: `publicIp`, `network`,
-`location`, `connection`, `tls`, `cloudflare`, and `headers`.
-
 ## Deploy
 
 ```powershell

@@ -7,7 +7,6 @@ import { HomeView } from "./HomeView";
 import type { ServerInspection } from "../features/server/server-inspection";
 
 const emptyInspection: ServerInspection = {
-  schemaVersion: 1,
   publicIp: { address: null, version: null },
   network: { asn: null, organization: null },
   location: {
@@ -184,10 +183,9 @@ describe("HomeView", () => {
       "href",
       "https://github.com/ergofriend/whoami/blob/main/LICENSE",
     );
-    expect(screen.getByRole("link", { name: "View server data as JSON" })).toHaveAttribute(
-      "href",
-      "/api.json",
-    );
+    expect(
+      screen.queryByRole("link", { name: "View server data as JSON" }),
+    ).not.toBeInTheDocument();
 
     const requestHeaders = screen
       .getByRole("heading", { name: "Request headers", level: 2 })

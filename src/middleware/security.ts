@@ -3,7 +3,7 @@ import { every } from "hono/combine";
 import { contextStorage } from "hono/context-storage";
 import { NONCE, secureHeaders } from "hono/secure-headers";
 
-const DYNAMIC_PATHS = new Set(["/", "/api.json"]);
+const DYNAMIC_PATHS = new Set(["/"]);
 const ALLOWED_METHODS = new Set(["GET", "HEAD"]);
 
 const dynamicResponsePolicy: MiddlewareHandler = async (c, next) => {

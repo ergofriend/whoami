@@ -7,7 +7,6 @@ function createApp() {
   const app = new Hono();
   app.use("*", securityMiddleware());
   app.get("/", (c) => c.text("ok"));
-  app.get("/api.json", (c) => c.json({ schemaVersion: 1 }));
   return app;
 }
 
@@ -16,10 +15,10 @@ describe("securityMiddleware", () => {
     const app = createApp();
 
     expect((await app.request("/", { method: "POST" })).status).toBe(405);
-    const optionsResponse = await app.request("/api.json", { method: "OPTIONS" });
-    expect(optionsResponse.status).toBe(405);
-    expect(optionsResponse.headers.get("allow")).toBe("GET, HEAD");
-    expect(optionsResponse.headers.get("cache-control")).toBe("no-store");
+    const removedApiResponse = await app.request("/api.json", { method: "POST" });
+    expect(removedApiResponse.status).toBe(404);
+    expect(removedApiResponse.headers.get("allow")).toBeNull();
+    expect(removedApiResponse.headers.get("cache-control")).toBeNull();
   });
 
   it("adds the dynamic response and browser security policy", async () => {

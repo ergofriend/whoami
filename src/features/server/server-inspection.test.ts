@@ -60,7 +60,6 @@ describe("buildServerInspection", () => {
       ),
     );
 
-    expect(result.schemaVersion).toBe(1);
     expect(result.publicIp).toEqual({ address: "203.0.113.42", version: "IPv4" });
     expect(result.network).toEqual({ asn: 64500, organization: "Example Network" });
     expect(result.location.region).toBeNull();

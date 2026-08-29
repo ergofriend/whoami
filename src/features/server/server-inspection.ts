@@ -18,7 +18,6 @@ type Nullable<T> = T | null;
 type AllowedHeader = (typeof ALLOWED_REQUEST_HEADERS)[number];
 
 export type ServerInspection = {
-  schemaVersion: 1;
   publicIp: { address: Nullable<string>; version: Nullable<"IPv4" | "IPv6"> };
   network: { asn: Nullable<number>; organization: Nullable<string> };
   location: {
@@ -135,7 +134,6 @@ export function buildServerInspection(request: Request): ServerInspection {
   }
 
   return {
-    schemaVersion: 1,
     publicIp: {
       address: publicIpAddress,
       version: detectIpVersion(publicIpAddress),

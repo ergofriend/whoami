@@ -25,7 +25,6 @@ export function ServerDetails({ inspection, browserDetails, copyControl }: Serve
         ]}
       >
         {copyControl}
-        <a href="/api.json">View server data as JSON</a>
       </KeyValueSection>
 
       <KeyValueSection

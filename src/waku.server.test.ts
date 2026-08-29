@@ -42,15 +42,13 @@ beforeAll(() => {
   app.use(honoMiddleware.middlewareRunner(middlewareModules, { app }));
   app.all("*", (context) => {
     const nonce = tryGetContext()?.get("secureHeadersNonce");
-    const headers = new Headers({
-      "content-type": context.req.path === "/api.json" ? "application/json" : "text/html",
-    });
+    const headers = new Headers({ "content-type": "text/html" });
     if (typeof nonce === "string") headers.set("x-render-nonce", nonce);
 
-    if (context.req.method === "HEAD") return new Response(null, { headers });
-    if (context.req.path === "/api.json") {
-      return new Response('{"schemaVersion":1}', { headers });
+    if (context.req.path !== "/") {
+      return new Response("Not found", { status: 404, headers });
     }
+    if (context.req.method === "HEAD") return new Response(null, { headers });
     return new Response("<!doctype html><p>downstream response</p>", { headers });
   });
 
@@ -72,8 +70,6 @@ describe("production Cloudflare adapter middleware configuration", () => {
   it.each([
     ["GET", "/"],
     ["HEAD", "/"],
-    ["GET", "/api.json"],
-    ["HEAD", "/api.json"],
   ])("applies the dynamic security policy to %s %s", async (method, path) => {
     const response = await request(path, method);
 
@@ -84,14 +80,19 @@ describe("production Cloudflare adapter middleware configuration", () => {
     expect(response.headers.get("x-render-nonce")).toBe(cspNonce(response));
   });
 
-  it.each([
-    ["POST", "/"],
-    ["OPTIONS", "/api.json"],
-  ])("rejects unsupported %s requests to %s before route handling", async (method, path) => {
-    const response = await request(path, method);
+  it("rejects unsupported methods on the page before route handling", async () => {
+    const response = await request("/", "POST");
 
     expect(response.status).toBe(405);
     expect(response.headers.get("allow")).toBe("GET, HEAD");
     expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it("does not retain a dynamic policy for the removed API path", async () => {
+    const response = await request("/api.json", "OPTIONS");
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get("allow")).toBeNull();
+    expect(response.headers.get("cache-control")).toBeNull();
   });
 });
