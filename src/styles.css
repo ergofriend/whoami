@@ -5,9 +5,11 @@
   background: #f5efe2;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  --drawably-stroke: #292720;
-  --drawably-fill: #d65332;
+  --drawably-stroke: #5947a8;
+  --drawably-fill: #5947a8;
   --drawably-paper: #fffaf0;
+  --drawably-success: #278443;
+  --drawably-error: #c63d2f;
   --drawably-width: 1.75;
 }
 
@@ -35,17 +37,17 @@ button {
 
 a {
   color: inherit;
-  text-decoration-color: #d65332;
+  text-decoration-color: #5947a8;
   text-decoration-thickness: 0.13em;
   text-underline-offset: 0.2em;
 }
 
 a:hover {
-  color: #a93620;
+  color: #5947a8;
 }
 
 a:focus-visible {
-  outline: 3px solid #d65332;
+  outline: 3px solid #5947a8;
   outline-offset: 4px;
 }
 
@@ -65,6 +67,7 @@ a:focus-visible {
   font-size: clamp(4rem, 15vw, 7.5rem);
   line-height: 0.9;
   letter-spacing: -0.04em;
+  color: #5947a8;
 }
 
 .site-intro {
@@ -72,6 +75,11 @@ a:focus-visible {
   margin: 1.75rem 0 1rem;
   font-size: clamp(1.05rem, 2vw, 1.25rem);
   line-height: 1.6;
+}
+
+.site-intro .drawably-highlight {
+  --drawably-fill: #f28a68;
+  padding-inline: 0.08em;
 }
 
 .source-callout {
@@ -87,7 +95,7 @@ a:focus-visible {
 }
 
 .source-label {
-  color: #676156;
+  color: #5947a8;
   font-size: 0.9rem;
   line-height: 1;
 }
@@ -112,6 +120,14 @@ a:focus-visible {
 .information-stack {
   display: grid;
   gap: 1.75rem;
+}
+
+.information-stack > .information-card:nth-of-type(odd) {
+  transform: rotate(-0.08deg);
+}
+
+.information-stack > .information-card:nth-of-type(even) {
+  transform: rotate(0.08deg);
 }
 
 .more-details {
@@ -159,6 +175,7 @@ a:focus-visible {
   margin: 0 0 1.25rem;
   font-size: clamp(1.7rem, 5vw, 2.25rem);
   line-height: 1.05;
+  color: #5947a8;
 }
 
 .section-description {
@@ -223,6 +240,14 @@ a:focus-visible {
   font-size: 0.85rem;
 }
 
+.copy-status--success {
+  color: #278443;
+}
+
+.copy-status--error {
+  color: #c63d2f;
+}
+
 .site-footer {
   display: grid;
   gap: 0.65rem;
@@ -253,6 +278,10 @@ a:focus-visible {
 
   .information-stack {
     gap: 1.2rem;
+  }
+
+  .information-stack > .information-card {
+    transform: none;
   }
 
   .information-card dl > div {

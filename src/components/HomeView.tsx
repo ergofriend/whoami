@@ -2,7 +2,7 @@ import type { ServerInspection } from "../features/server/server-inspection";
 import { BrowserDetails } from "./BrowserDetails";
 import { CopyButton } from "./CopyButton";
 import { ServerDetails } from "./ServerDetails";
-import { SketchBadgeLink, SketchUnderline } from "./Sketch";
+import { SketchBadgeLink, SketchHighlight, SketchUnderline } from "./Sketch";
 
 type HomeViewProps = {
   inspection: ServerInspection;
@@ -16,7 +16,8 @@ export function HomeView({ inspection }: HomeViewProps) {
           <SketchUnderline>whoami</SketchUnderline>
         </h1>
         <p className="site-intro">
-          See the network and browser information available to this site.
+          See the <SketchHighlight>network and browser information</SketchHighlight> available to{" "}
+          this site.
         </p>
         <div className="source-callout">
           <span className="source-label">open source</span>

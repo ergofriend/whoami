@@ -19,8 +19,9 @@ describe("CopyButton", () => {
     const button = screen.getByRole("button", { name: "Copy IP" });
     fireEvent.click(button);
 
-    expect(await screen.findByRole("status")).toHaveTextContent("Copied.");
-    expect(button).toHaveClass("drawably-button");
+    expect(await screen.findByRole("status")).toHaveTextContent("Copied!");
+    expect(button).toHaveClass("drawably-button", "drawably-button--solid");
+    expect(button).toHaveAttribute("data-state", "success");
     expect(writeText).toHaveBeenCalledWith("203.0.113.42");
   });
 

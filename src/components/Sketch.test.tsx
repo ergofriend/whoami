@@ -3,7 +3,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { SketchButton, SketchCard, SketchUnderline } from "./Sketch";
+import { SketchButton, SketchCard, SketchHighlight, SketchUnderline } from "./Sketch";
 
 describe("Sketch", () => {
   it("includes its layout classes in server-rendered markup", () => {
@@ -11,7 +11,8 @@ describe("Sketch", () => {
       <>
         <SketchCard>Card</SketchCard>
         <SketchUnderline>Heading</SketchUnderline>
-        <SketchButton>Button</SketchButton>
+        <SketchHighlight>Highlight</SketchHighlight>
+        <SketchButton variant="solid">Button</SketchButton>
       </>,
     );
     const container = document.createElement("div");
@@ -21,11 +22,12 @@ describe("Sketch", () => {
       "drawably-host",
       "drawably-card",
     );
-    expect(container.querySelector("span")).toHaveClass("drawably-host", "drawably-underline");
+    expect(container.querySelector(".drawably-underline")).toHaveClass("drawably-host");
+    expect(container.querySelector(".drawably-highlight")).toHaveClass("drawably-host");
     expect(container.querySelector("button")).toHaveClass(
       "drawably-host",
       "drawably-button",
-      "drawably-button--outline",
+      "drawably-button--solid",
     );
   });
 });

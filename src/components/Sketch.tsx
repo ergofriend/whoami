@@ -7,12 +7,18 @@ import {
   type ButtonHTMLAttributes,
   type ReactNode,
 } from "react";
-import { drawablyBadge, drawablyButton, drawablyCard, drawablyUnderline } from "drawably";
+import {
+  drawablyBadge,
+  drawablyButton,
+  drawablyCard,
+  drawablyHighlight,
+  drawablyUnderline,
+} from "drawably";
 
 const sketchClasses = {
   card: "drawably-host drawably-card",
+  highlight: "drawably-host drawably-highlight",
   underline: "drawably-host drawably-underline",
-  button: "drawably-host drawably-button drawably-button--outline",
   badge: "drawably-host drawably-badge drawably-badge--outline",
 } as const;
 
@@ -56,22 +62,53 @@ export function SketchUnderline({ children }: { children: ReactNode }) {
   );
 }
 
-type SketchButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
+export function SketchHighlight({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLSpanElement>(null);
 
-export function SketchButton({ children, className, ...props }: SketchButtonProps) {
+  useEffect(() => {
+    if (ref.current === null) return;
+    const sketch = drawablyHighlight(ref.current, {
+      roughness: 0.8,
+      boil: 0.15,
+    });
+    return () => sketch.destroy();
+  }, []);
+
+  return (
+    <span ref={ref} className={sketchClasses.highlight}>
+      {children}
+    </span>
+  );
+}
+
+type SketchButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "outline" | "solid";
+};
+
+export function SketchButton({
+  children,
+  className,
+  variant = "outline",
+  ...props
+}: SketchButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (ref.current === null) return;
-    const sketch = drawablyButton(ref.current, { variant: "outline" });
+    const sketch = drawablyButton(ref.current, { variant });
     return () => sketch.destroy();
-  }, []);
+  }, [variant]);
 
   return (
     <button
       ref={ref}
       type="button"
-      className={classNames(sketchClasses.button, className)}
+      className={classNames(
+        "drawably-host",
+        "drawably-button",
+        `drawably-button--${variant}`,
+        className,
+      )}
       {...props}
     >
       {children}

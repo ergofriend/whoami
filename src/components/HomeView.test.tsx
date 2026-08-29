@@ -73,9 +73,9 @@ describe("HomeView", () => {
 
     const banner = screen.getByRole("banner");
     expect(banner).toBeInTheDocument();
-    expect(
-      within(banner).getByText("See the network and browser information available to this site."),
-    ).toBeInTheDocument();
+    expect(banner.querySelector(".site-intro")).toHaveTextContent(
+      "See the network and browser information available to this site.",
+    );
     expect(screen.getByRole("main")).toBeInTheDocument();
     expect(screen.getByRole("contentinfo")).toBeInTheDocument();
     await waitFor(() => {
