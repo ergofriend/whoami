@@ -51,9 +51,9 @@ function unsupportedItems(labels: readonly string[]): KeyValueItem[] {
 
 function readable(value: string | number | boolean | null | string[]): string {
   if (value === null) return 'Not supported';
-  if (Array.isArray(value)) return value.join(', ');
+  if (Array.isArray(value)) return value.length === 0 ? 'Not supported' : value.join(', ');
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-  return String(value);
+  return value === '' ? 'Not supported' : String(value);
 }
 
 function inspectionItems(inspection: BrowserInspection): {

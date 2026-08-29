@@ -64,4 +64,29 @@ describe('BrowserDetails', () => {
     expect(within(browserSection).getByText('en-US, en')).toBeInTheDocument();
     expect(within(browserSection).getAllByText('Not supported')).toHaveLength(1);
   });
+
+  it('renders empty user-agent and language fallbacks as Not supported', async () => {
+    render(
+      <BrowserDetails
+        collect={() => ({
+          ...inspection,
+          browser: { ...inspection.browser, userAgent: '', languages: [] },
+        })}
+      />,
+    );
+
+    const browserSection = screen.getByRole('heading', { name: 'Browser', level: 2 }).closest('section');
+    if (!browserSection) throw new Error('Browser section was not rendered');
+
+    await screen.findAllByText('Not supported');
+    expect(Array.from(browserSection.querySelectorAll('dd')).map((definition) => definition.textContent)).toEqual([
+      'Not supported',
+      'Not supported',
+      'Asia/Tokyo',
+      '-540',
+      'Yes',
+      'Not supported',
+      'Win32',
+    ]);
+  });
 });
