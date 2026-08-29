@@ -27,6 +27,10 @@ export function HomeView({ inspection }: HomeViewProps) {
       </main>
       <footer>
         <a href="https://github.com/ergofriend/whoami">GitHub repository</a>
+        <p>This site does not store the information displayed above.</p>
+        <p>Browser details are processed only in your browser and are not sent back to this site.</p>
+        <p>Cloudflare Web Analytics is used for privacy-focused performance and visit analytics.</p>
+        <a href="https://github.com/ergofriend/whoami/blob/main/LICENSE">MIT License</a>
       </footer>
     </>
   );

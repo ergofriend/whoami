@@ -149,6 +149,21 @@ describe('HomeView', () => {
       'https://github.com/ergofriend/whoami',
       'https://github.com/ergofriend/whoami',
     ]);
+    expect(screen.getByText('This site does not store the information displayed above.')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Browser details are processed only in your browser and are not sent back to this site.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Cloudflare Web Analytics is used for privacy-focused performance and visit analytics.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'MIT License' })).toHaveAttribute(
+      'href',
+      'https://github.com/ergofriend/whoami/blob/main/LICENSE',
+    );
     expect(screen.getByRole('link', { name: 'View server data as JSON' })).toHaveAttribute(
       'href',
       '/api.json',
