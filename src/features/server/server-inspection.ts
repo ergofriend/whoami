@@ -81,21 +81,48 @@ function nullableNumber(value: unknown): Nullable<number> {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
+function isValidIpv4(address: string): boolean {
+  const octets = address.split('.');
+  return (
+    octets.length === 4 &&
+    octets.every(
+      (octet) => /^(?:0|[1-9]\d{0,2})$/.test(octet) && Number(octet) <= 255,
+    )
+  );
+}
+
+function isValidIpv6(address: string): boolean {
+  if (!address.includes(':') || !/^[0-9a-fA-F:.]+$/.test(address)) return false;
+
+  const halves = address.split('::');
+  if (halves.length > 2) return false;
+
+  const hasCompression = halves.length === 2;
+  const parts = halves.flatMap((half) => (half === '' ? [] : half.split(':')));
+  if (parts.some((part) => part === '')) return false;
+
+  let units = 0;
+  for (const [index, part] of parts.entries()) {
+    if (part.includes('.')) {
+      if (index !== parts.length - 1 || !isValidIpv4(part)) return false;
+      units += 2;
+    } else {
+      if (!/^[0-9a-fA-F]{1,4}$/.test(part)) return false;
+      units += 1;
+    }
+  }
+
+  return hasCompression ? units < 8 : units === 8;
+}
+
 export function detectIpVersion(address: string | null): 'IPv4' | 'IPv6' | null {
   if (address === null) {
     return null;
   }
 
-  if (/^(?:\d{1,3}\.){3}\d{1,3}$/.test(address)) {
-    const octets = address.split('.');
-    if (octets.every((octet) => Number(octet) <= 255)) {
-      return 'IPv4';
-    }
-  }
+  if (isValidIpv4(address)) return 'IPv4';
 
-  if (address.includes(':') && /^[0-9a-fA-F:.]+$/.test(address)) {
-    return 'IPv6';
-  }
+  if (isValidIpv6(address)) return 'IPv6';
 
   return null;
 }

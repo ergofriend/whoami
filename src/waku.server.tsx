@@ -15,4 +15,5 @@ export default adapter(fsRouter(import.meta.glob('./pages/**/*.{tsx,ts}')), {
     //   }
     // },
   } satisfies ExportedHandler<Env>,
+  middlewareModules: import.meta.glob('./middleware/security.ts'),
 });

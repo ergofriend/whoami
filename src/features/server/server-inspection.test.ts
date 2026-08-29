@@ -19,8 +19,18 @@ describe('detectIpVersion', () => {
   it.each([
     ['203.0.113.42', 'IPv4'],
     ['2001:db8::42', 'IPv6'],
+    ['2001:db8:0:1:2:3:4:5', 'IPv6'],
+    ['::', 'IPv6'],
     ['::ffff:192.0.2.1', 'IPv6'],
     ['999.1.1.1', null],
+    [':', null],
+    ['2001:db8:::42', null],
+    ['2001:db8:00000::42', null],
+    ['1:2:3:4:5:6:7:8:9', null],
+    ['1:2:3', null],
+    ['1::2::3', null],
+    ['::ffff:192.0.2.999', null],
+    ['::192.0.2.1:1', null],
     ['not-an-ip', null],
     [null, null],
   ] as const)('returns %s for %s', (address, expected) => {

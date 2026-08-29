@@ -25,7 +25,7 @@ const inspection: BrowserInspection = {
     pixelDepth: 24,
     maxTouchPoints: 0,
     logicalProcessors: 8,
-    deviceMemoryGiB: null,
+    deviceMemoryGiB: 8,
   },
   preferences: {
     colorScheme: 'dark',
@@ -83,10 +83,59 @@ describe('BrowserDetails', () => {
       'Not supported',
       'Not supported',
       'Asia/Tokyo',
-      '-540',
+      'UTC+09:00',
       'Yes',
       'Not supported',
       'Win32',
     ]);
+  });
+
+  it('formats UTC offsets and network or hardware measurements with readable units', async () => {
+    render(<BrowserDetails collect={() => inspection} />);
+
+    expect(await screen.findByText('UTC+09:00')).toBeInTheDocument();
+    expect(screen.getByText('8 GiB')).toBeInTheDocument();
+    expect(screen.getByText('10 Mbps')).toBeInTheDocument();
+    expect(screen.getByText('50 ms')).toBeInTheDocument();
+  });
+
+  it('renders every normalized unsupported value exactly as Not supported', async () => {
+    const unsupported: BrowserInspection = {
+      browser: {
+        userAgent: null,
+        languages: null,
+        timezone: null,
+        utcOffsetMinutes: null,
+        cookiesEnabled: null,
+        doNotTrack: null,
+        platform: null,
+      },
+      device: {
+        screen: null,
+        availableScreen: null,
+        viewport: null,
+        devicePixelRatio: null,
+        colorDepth: null,
+        pixelDepth: null,
+        maxTouchPoints: null,
+        logicalProcessors: null,
+        deviceMemoryGiB: null,
+      },
+      preferences: {
+        colorScheme: null,
+        reducedMotion: null,
+        contrast: null,
+        online: null,
+        effectiveConnectionType: null,
+        downlinkMbps: null,
+        rttMs: null,
+        saveData: null,
+      },
+    };
+
+    render(<BrowserDetails collect={() => unsupported} />);
+
+    await screen.findByRole('heading', { name: 'Browser', level: 2 });
+    expect(screen.getAllByText('Not supported')).toHaveLength(24);
   });
 });

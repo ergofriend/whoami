@@ -12,6 +12,7 @@ export function HomeView({ inspection }: HomeViewProps) {
     <>
       <header>
         <h1>whoami</h1>
+        <p>See the network and browser information available to this site.</p>
         <a href="https://github.com/ergofriend/whoami">GitHub repository</a>
       </header>
       <main>

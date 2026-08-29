@@ -56,6 +56,19 @@ function readable(value: string | number | boolean | null | string[]): string {
   return value === '' ? 'Not supported' : String(value);
 }
 
+function formatUtcOffset(minutes: number | null): string {
+  if (minutes === null) return 'Not supported';
+  const absoluteMinutes = Math.abs(minutes);
+  const hours = Math.floor(absoluteMinutes / 60);
+  const remainingMinutes = absoluteMinutes % 60;
+  const sign = minutes <= 0 ? '+' : '-';
+  return `UTC${sign}${String(hours).padStart(2, '0')}:${String(remainingMinutes).padStart(2, '0')}`;
+}
+
+function formatMeasurement(value: number | null, unit: string): string {
+  return value === null ? 'Not supported' : `${value} ${unit}`;
+}
+
 function inspectionItems(inspection: BrowserInspection): {
   browser: KeyValueItem[];
   device: KeyValueItem[];
@@ -66,7 +79,7 @@ function inspectionItems(inspection: BrowserInspection): {
       { label: browserLabels[0], value: readable(inspection.browser.userAgent) },
       { label: browserLabels[1], value: readable(inspection.browser.languages) },
       { label: browserLabels[2], value: readable(inspection.browser.timezone) },
-      { label: browserLabels[3], value: readable(inspection.browser.utcOffsetMinutes) },
+      { label: browserLabels[3], value: formatUtcOffset(inspection.browser.utcOffsetMinutes) },
       { label: browserLabels[4], value: readable(inspection.browser.cookiesEnabled) },
       { label: browserLabels[5], value: readable(inspection.browser.doNotTrack) },
       { label: browserLabels[6], value: readable(inspection.browser.platform) },
@@ -80,7 +93,10 @@ function inspectionItems(inspection: BrowserInspection): {
       { label: deviceLabels[5], value: readable(inspection.device.pixelDepth) },
       { label: deviceLabels[6], value: readable(inspection.device.maxTouchPoints) },
       { label: deviceLabels[7], value: readable(inspection.device.logicalProcessors) },
-      { label: deviceLabels[8], value: readable(inspection.device.deviceMemoryGiB) },
+      {
+        label: deviceLabels[8],
+        value: formatMeasurement(inspection.device.deviceMemoryGiB, 'GiB'),
+      },
     ],
     preferences: [
       { label: preferenceLabels[0], value: readable(inspection.preferences.colorScheme) },
@@ -88,8 +104,14 @@ function inspectionItems(inspection: BrowserInspection): {
       { label: preferenceLabels[2], value: readable(inspection.preferences.contrast) },
       { label: preferenceLabels[3], value: readable(inspection.preferences.online) },
       { label: preferenceLabels[4], value: readable(inspection.preferences.effectiveConnectionType) },
-      { label: preferenceLabels[5], value: readable(inspection.preferences.downlinkMbps) },
-      { label: preferenceLabels[6], value: readable(inspection.preferences.rttMs) },
+      {
+        label: preferenceLabels[5],
+        value: formatMeasurement(inspection.preferences.downlinkMbps, 'Mbps'),
+      },
+      {
+        label: preferenceLabels[6],
+        value: formatMeasurement(inspection.preferences.rttMs, 'ms'),
+      },
       { label: preferenceLabels[7], value: readable(inspection.preferences.saveData) },
     ],
   };

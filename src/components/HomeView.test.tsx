@@ -68,7 +68,11 @@ describe('HomeView', () => {
       'Request headers',
     ]);
 
-    expect(screen.getByRole('banner')).toBeInTheDocument();
+    const banner = screen.getByRole('banner');
+    expect(banner).toBeInTheDocument();
+    expect(
+      within(banner).getByText('See the network and browser information available to this site.'),
+    ).toBeInTheDocument();
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('contentinfo')).toBeInTheDocument();
     expect(document.querySelector('style')).not.toBeInTheDocument();

@@ -2,22 +2,22 @@ type Nullable<T> = T | null;
 
 export type BrowserInspection = {
   browser: {
-    userAgent: string;
-    languages: string[];
+    userAgent: Nullable<string>;
+    languages: Nullable<string[]>;
     timezone: Nullable<string>;
-    utcOffsetMinutes: number;
-    cookiesEnabled: boolean;
+    utcOffsetMinutes: Nullable<number>;
+    cookiesEnabled: Nullable<boolean>;
     doNotTrack: Nullable<string>;
     platform: Nullable<string>;
   };
   device: {
-    screen: string;
-    availableScreen: string;
-    viewport: string;
-    devicePixelRatio: number;
-    colorDepth: number;
-    pixelDepth: number;
-    maxTouchPoints: number;
+    screen: Nullable<string>;
+    availableScreen: Nullable<string>;
+    viewport: Nullable<string>;
+    devicePixelRatio: Nullable<number>;
+    colorDepth: Nullable<number>;
+    pixelDepth: Nullable<number>;
+    maxTouchPoints: Nullable<number>;
     logicalProcessors: Nullable<number>;
     deviceMemoryGiB: Nullable<number>;
   };
@@ -25,7 +25,7 @@ export type BrowserInspection = {
     colorScheme: Nullable<'light' | 'dark'>;
     reducedMotion: Nullable<boolean>;
     contrast: Nullable<'more' | 'less'>;
-    online: boolean;
+    online: Nullable<boolean>;
     effectiveConnectionType: Nullable<string>;
     downlinkMbps: Nullable<number>;
     rttMs: Nullable<number>;
@@ -114,54 +114,90 @@ export function createBrowserSource(): BrowserSource {
   };
 }
 
-function safe<T>(read: () => T, fallback: T): T {
+type Guard<T> = (value: unknown) => value is T;
+
+function readSupported<T>(read: () => unknown, guard: Guard<T>): Nullable<T> {
   try {
-    return read();
+    const value = read();
+    return guard(value) ? value : null;
   } catch {
-    return fallback;
+    return null;
   }
 }
 
-function formatSize(width: Nullable<number>, height: Nullable<number>): string {
+function isBoolean(value: unknown): value is boolean {
+  return typeof value === 'boolean';
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isLanguageList(value: unknown): value is string[] {
+  return Array.isArray(value) && value.length > 0 && value.every(isNonEmptyString);
+}
+
+function isColorScheme(value: unknown): value is 'light' | 'dark' {
+  return value === 'light' || value === 'dark';
+}
+
+function isContrast(value: unknown): value is 'more' | 'less' {
+  return value === 'more' || value === 'less';
+}
+
+function formatSize(width: Nullable<number>, height: Nullable<number>): Nullable<string> {
   return typeof width === 'number' && typeof height === 'number'
     ? `${width} × ${height}`
-    : 'Not supported';
+    : null;
 }
 
 export function collectBrowserInspection(source = createBrowserSource()): BrowserInspection {
   return {
     browser: {
-      userAgent: safe(source.userAgent, ''),
-      languages: safe(source.languages, []),
-      timezone: safe(source.timezone, null),
-      utcOffsetMinutes: safe(source.utcOffsetMinutes, 0),
-      cookiesEnabled: safe(source.cookiesEnabled, false),
-      doNotTrack: safe(source.doNotTrack, null),
-      platform: safe(source.platform, null),
+      userAgent: readSupported(source.userAgent, isNonEmptyString),
+      languages: readSupported(source.languages, isLanguageList),
+      timezone: readSupported(source.timezone, isNonEmptyString),
+      utcOffsetMinutes: readSupported(source.utcOffsetMinutes, isFiniteNumber),
+      cookiesEnabled: readSupported(source.cookiesEnabled, isBoolean),
+      doNotTrack: readSupported(source.doNotTrack, isNonEmptyString),
+      platform: readSupported(source.platform, isNonEmptyString),
     },
     device: {
-      screen: formatSize(safe(source.screenWidth, null), safe(source.screenHeight, null)),
-      availableScreen: formatSize(
-        safe(source.availableScreenWidth, null),
-        safe(source.availableScreenHeight, null),
+      screen: formatSize(
+        readSupported(source.screenWidth, isFiniteNumber),
+        readSupported(source.screenHeight, isFiniteNumber),
       ),
-      viewport: formatSize(safe(source.viewportWidth, null), safe(source.viewportHeight, null)),
-      devicePixelRatio: safe(source.devicePixelRatio, 1),
-      colorDepth: safe(source.colorDepth, 0),
-      pixelDepth: safe(source.pixelDepth, 0),
-      maxTouchPoints: safe(source.maxTouchPoints, 0),
-      logicalProcessors: safe(source.logicalProcessors, null),
-      deviceMemoryGiB: safe(source.deviceMemoryGiB, null),
+      availableScreen: formatSize(
+        readSupported(source.availableScreenWidth, isFiniteNumber),
+        readSupported(source.availableScreenHeight, isFiniteNumber),
+      ),
+      viewport: formatSize(
+        readSupported(source.viewportWidth, isFiniteNumber),
+        readSupported(source.viewportHeight, isFiniteNumber),
+      ),
+      devicePixelRatio: readSupported(source.devicePixelRatio, isFiniteNumber),
+      colorDepth: readSupported(source.colorDepth, isFiniteNumber),
+      pixelDepth: readSupported(source.pixelDepth, isFiniteNumber),
+      maxTouchPoints: readSupported(source.maxTouchPoints, isFiniteNumber),
+      logicalProcessors: readSupported(source.logicalProcessors, isFiniteNumber),
+      deviceMemoryGiB: readSupported(source.deviceMemoryGiB, isFiniteNumber),
     },
     preferences: {
-      colorScheme: safe(source.colorScheme, null),
-      reducedMotion: safe(source.reducedMotion, null),
-      contrast: safe(source.contrast, null),
-      online: safe(source.online, true),
-      effectiveConnectionType: safe(source.effectiveConnectionType, null),
-      downlinkMbps: safe(source.downlinkMbps, null),
-      rttMs: safe(source.rttMs, null),
-      saveData: safe(source.saveData, null),
+      colorScheme: readSupported(source.colorScheme, isColorScheme),
+      reducedMotion: readSupported(source.reducedMotion, isBoolean),
+      contrast: readSupported(source.contrast, isContrast),
+      online: readSupported(source.online, isBoolean),
+      effectiveConnectionType: readSupported(
+        source.effectiveConnectionType,
+        isNonEmptyString,
+      ),
+      downlinkMbps: readSupported(source.downlinkMbps, isFiniteNumber),
+      rttMs: readSupported(source.rttMs, isFiniteNumber),
+      saveData: readSupported(source.saveData, isBoolean),
     },
   };
 }
