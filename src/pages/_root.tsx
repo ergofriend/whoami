@@ -1,5 +1,10 @@
 import type { ReactNode } from "react";
 
+import "@fontsource-variable/inter";
+import "drawably/style.css";
+import "drawably/font.css";
+import "../styles.css";
+
 export default function Root({ children }: { children: ReactNode }) {
   return (
     <html lang="en">

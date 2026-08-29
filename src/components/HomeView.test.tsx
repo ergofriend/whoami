@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { HomeView } from "./HomeView";
@@ -49,7 +49,7 @@ const emptyInspection: ServerInspection = {
 describe("HomeView", () => {
   afterEach(cleanup);
 
-  it("renders the complete unstyled semantic page in the required heading order", () => {
+  it("renders the complete semantic page as vertically grouped sketched cards", async () => {
     render(<HomeView inspection={emptyInspection} />);
 
     expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
@@ -73,8 +73,6 @@ describe("HomeView", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("main")).toBeInTheDocument();
     expect(screen.getByRole("contentinfo")).toBeInTheDocument();
-    expect(document.querySelector("style")).not.toBeInTheDocument();
-
     const sections = screen
       .getAllByRole("heading")
       .slice(1)
@@ -85,6 +83,13 @@ describe("HomeView", () => {
       expect(section?.querySelector("dl")).toBeInTheDocument();
       expect(section?.querySelectorAll("dt").length).toBeGreaterThan(0);
       expect(section?.querySelectorAll("dd").length).toBeGreaterThan(0);
+    }
+
+    await waitFor(() => {
+      expect(document.querySelectorAll(".drawably-card")).toHaveLength(10);
+    });
+    for (const heading of screen.getAllByRole("heading")) {
+      expect(heading).toHaveClass("sketch-heading");
     }
 
     expect(

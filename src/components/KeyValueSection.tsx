@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { SketchCard, SketchUnderline } from "./Sketch";
+
 export type KeyValueItem = {
   label: string;
   value: string | number | null;
@@ -16,18 +18,22 @@ export function KeyValueSection({ title, description, items, children }: KeyValu
   const headingId = title.toLowerCase().replace(/\s+/g, "-");
 
   return (
-    <section aria-labelledby={headingId}>
-      <h2 id={headingId}>{title}</h2>
-      {description !== undefined ? <p>{description}</p> : null}
-      <dl>
-        {items.map(({ label, value }) => (
-          <div key={label}>
-            <dt>{label}</dt>
-            <dd>{value ?? "Not available"}</dd>
-          </div>
-        ))}
-      </dl>
-      {children}
-    </section>
+    <SketchCard>
+      <section aria-labelledby={headingId}>
+        <h2 id={headingId} className="sketch-heading">
+          <SketchUnderline>{title}</SketchUnderline>
+        </h2>
+        {description !== undefined ? <p className="section-description">{description}</p> : null}
+        <dl>
+          {items.map(({ label, value }) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value ?? "Not available"}</dd>
+            </div>
+          ))}
+        </dl>
+        {children}
+      </section>
+    </SketchCard>
   );
 }

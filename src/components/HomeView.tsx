@@ -2,6 +2,7 @@ import type { ServerInspection } from "../features/server/server-inspection";
 import { BrowserDetails } from "./BrowserDetails";
 import { CopyButton } from "./CopyButton";
 import { ServerDetails } from "./ServerDetails";
+import { SketchUnderline } from "./Sketch";
 
 type HomeViewProps = {
   inspection: ServerInspection;
@@ -9,13 +10,19 @@ type HomeViewProps = {
 
 export function HomeView({ inspection }: HomeViewProps) {
   return (
-    <>
-      <header>
-        <h1>whoami</h1>
-        <p>See the network and browser information available to this site.</p>
-        <a href="https://github.com/ergofriend/whoami">GitHub repository</a>
+    <div className="site-shell">
+      <header className="site-header">
+        <h1 className="sketch-heading">
+          <SketchUnderline>whoami</SketchUnderline>
+        </h1>
+        <p className="site-intro">
+          See the network and browser information available to this site.
+        </p>
+        <a className="repository-link" href="https://github.com/ergofriend/whoami">
+          GitHub repository
+        </a>
       </header>
-      <main>
+      <main className="information-stack">
         <ServerDetails
           inspection={inspection}
           browserDetails={<BrowserDetails />}
@@ -26,15 +33,17 @@ export function HomeView({ inspection }: HomeViewProps) {
           }
         />
       </main>
-      <footer>
-        <a href="https://github.com/ergofriend/whoami">GitHub repository</a>
+      <footer className="site-footer">
+        <nav aria-label="Project links">
+          <a href="https://github.com/ergofriend/whoami">GitHub repository</a>
+          <a href="https://github.com/ergofriend/whoami/blob/main/LICENSE">MIT License</a>
+        </nav>
         <p>This site does not store the information displayed above.</p>
         <p>
           Browser details are processed only in your browser and are not sent back to this site.
         </p>
         <p>Cloudflare Web Analytics is used for privacy-focused performance and visit analytics.</p>
-        <a href="https://github.com/ergofriend/whoami/blob/main/LICENSE">MIT License</a>
       </footer>
-    </>
+    </div>
   );
 }

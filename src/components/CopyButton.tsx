@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { SketchButton } from "./Sketch";
+
 type CopyButtonProps = {
   value: string;
   label: string;
@@ -20,13 +22,13 @@ export function CopyButton({ value, label }: CopyButtonProps) {
   }
 
   return (
-    <>
-      <button type="button" onClick={() => void copy()}>
+    <div className="copy-control">
+      <SketchButton className="copy-button" onClick={() => void copy()}>
         {label}
-      </button>
-      <p role="status" aria-live="polite">
+      </SketchButton>
+      <p className="copy-status" role="status" aria-live="polite">
         {status}
       </p>
-    </>
+    </div>
   );
 }

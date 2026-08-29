@@ -16,9 +16,11 @@ describe("CopyButton", () => {
     Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
 
     render(<CopyButton value="203.0.113.42" label="Copy IP" />);
-    fireEvent.click(screen.getByRole("button", { name: "Copy IP" }));
+    const button = screen.getByRole("button", { name: "Copy IP" });
+    fireEvent.click(button);
 
     expect(await screen.findByRole("status")).toHaveTextContent("Copied.");
+    expect(button).toHaveClass("drawably-button");
     expect(writeText).toHaveBeenCalledWith("203.0.113.42");
   });
 
