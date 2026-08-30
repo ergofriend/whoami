@@ -45,9 +45,6 @@ beforeAll(() => {
     const headers = new Headers({ "content-type": "text/html" });
     if (typeof nonce === "string") headers.set("x-render-nonce", nonce);
 
-    if (context.req.path !== "/") {
-      return new Response("Not found", { status: 404, headers });
-    }
     if (context.req.method === "HEAD") return new Response(null, { headers });
     return new Response("<!doctype html><p>downstream response</p>", { headers });
   });
@@ -55,8 +52,8 @@ beforeAll(() => {
   serverEntry = { fetch: (request) => app.fetch(request) };
 });
 
-function request(path: string, method = "GET") {
-  return serverEntry.fetch(new Request(`https://whoami.test${path}`, { method }));
+function request(method = "GET") {
+  return serverEntry.fetch(new Request("https://whoami.test/", { method }));
 }
 
 function cspNonce(response: Response): string {
@@ -67,11 +64,8 @@ function cspNonce(response: Response): string {
 }
 
 describe("production Cloudflare adapter middleware configuration", () => {
-  it.each([
-    ["GET", "/"],
-    ["HEAD", "/"],
-  ])("applies the dynamic security policy to %s %s", async (method, path) => {
-    const response = await request(path, method);
+  it.each(["GET", "HEAD"])("applies the dynamic security policy to %s /", async (method) => {
+    const response = await request(method);
 
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
@@ -81,18 +75,10 @@ describe("production Cloudflare adapter middleware configuration", () => {
   });
 
   it("rejects unsupported methods on the page before route handling", async () => {
-    const response = await request("/", "POST");
+    const response = await request("POST");
 
     expect(response.status).toBe(405);
     expect(response.headers.get("allow")).toBe("GET, HEAD");
     expect(response.headers.get("cache-control")).toBe("no-store");
-  });
-
-  it("does not retain a dynamic policy for the removed API path", async () => {
-    const response = await request("/api.json", "OPTIONS");
-
-    expect(response.status).toBe(404);
-    expect(response.headers.get("allow")).toBeNull();
-    expect(response.headers.get("cache-control")).toBeNull();
   });
 });

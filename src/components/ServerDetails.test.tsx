@@ -123,9 +123,6 @@ describe("ServerDetails", () => {
       name: "Copy IP address",
     });
     expect(copyControl).toBeInTheDocument();
-    expect(
-      within(networkSection).queryByRole("link", { name: "View server data as JSON" }),
-    ).not.toBeInTheDocument();
 
     const headerHeading = screen.getByRole("heading", { name: "Request headers", level: 2 });
     const headerSection = headerHeading.closest("section");

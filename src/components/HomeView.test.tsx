@@ -130,7 +130,7 @@ describe("HomeView", () => {
     expect(getComputedStyle(screen.getByRole("banner"))).toMatchObject({ position: "relative" });
   });
 
-  it("integrates browser details and an IP copy control while retaining server links", async () => {
+  it("integrates browser details, an IP copy control, and the source link", async () => {
     render(
       <HomeView
         inspection={{
@@ -221,8 +221,6 @@ describe("HomeView", () => {
     expect(
       sourceLink.querySelector("svg[viewBox='0 0 16 16'][aria-hidden='true']"),
     ).toBeInTheDocument();
-    expect(within(sourceLink).queryByText("↗")).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "GitHub repository" })).not.toBeInTheDocument();
     expect(
       screen.getByText("This site does not store the information displayed above."),
     ).toBeInTheDocument();
@@ -236,10 +234,6 @@ describe("HomeView", () => {
         "Cloudflare Web Analytics is used for privacy-focused performance and visit analytics.",
       ),
     ).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "MIT License" })).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: "View server data as JSON" }),
-    ).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByText("More details"));
 

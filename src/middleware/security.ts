@@ -3,12 +3,11 @@ import { every } from "hono/combine";
 import { contextStorage } from "hono/context-storage";
 import { NONCE, secureHeaders } from "hono/secure-headers";
 
-const DYNAMIC_PATHS = new Set(["/"]);
 const ALLOWED_METHODS = new Set(["GET", "HEAD"]);
 
 const dynamicResponsePolicy: MiddlewareHandler = async (c, next) => {
-  const isDynamicRoute = DYNAMIC_PATHS.has(c.req.path);
-  if (isDynamicRoute && !ALLOWED_METHODS.has(c.req.method)) {
+  const isPageRequest = c.req.path === "/";
+  if (isPageRequest && !ALLOWED_METHODS.has(c.req.method)) {
     return new Response(null, {
       status: 405,
       headers: { Allow: "GET, HEAD", "Cache-Control": "no-store" },
@@ -16,7 +15,7 @@ const dynamicResponsePolicy: MiddlewareHandler = async (c, next) => {
   }
 
   await next();
-  if (!isDynamicRoute) return;
+  if (!isPageRequest) return;
 
   const headers = new Headers(c.res.headers);
   headers.set("Cache-Control", "no-store");

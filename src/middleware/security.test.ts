@@ -11,14 +11,13 @@ function createApp() {
 }
 
 describe("securityMiddleware", () => {
-  it("rejects unsupported dynamic-route methods with an explicit allow list", async () => {
+  it("rejects unsupported page methods with an explicit allow list", async () => {
     const app = createApp();
+    const response = await app.request("/", { method: "POST" });
 
-    expect((await app.request("/", { method: "POST" })).status).toBe(405);
-    const removedApiResponse = await app.request("/api.json", { method: "POST" });
-    expect(removedApiResponse.status).toBe(404);
-    expect(removedApiResponse.headers.get("allow")).toBeNull();
-    expect(removedApiResponse.headers.get("cache-control")).toBeNull();
+    expect(response.status).toBe(405);
+    expect(response.headers.get("allow")).toBe("GET, HEAD");
+    expect(response.headers.get("cache-control")).toBe("no-store");
   });
 
   it("adds the dynamic response and browser security policy", async () => {
