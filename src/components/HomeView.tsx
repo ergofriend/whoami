@@ -19,7 +19,6 @@ export function HomeView({ inspection }: HomeViewProps) {
           this site.
         </p>
         <div className="source-callout">
-          <span className="source-label">open source</span>
           <SketchBadgeLink className="repository-link" href="https://github.com/ergofriend/whoami">
             <svg aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16">
               <path

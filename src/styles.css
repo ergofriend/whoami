@@ -94,12 +94,6 @@ a:focus-visible {
   transform: rotate(5deg);
 }
 
-.source-label {
-  color: #5947a8;
-  font-size: 0.9rem;
-  line-height: 1;
-}
-
 .repository-link.drawably-badge {
   display: inline-flex;
   align-items: center;

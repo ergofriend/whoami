@@ -123,7 +123,7 @@ describe("HomeView", () => {
   it("pins the source badge diagonally to the header's upper-right corner", () => {
     render(<HomeView inspection={emptyInspection} />);
 
-    const sourceCallout = screen.getByText("open source").parentElement;
+    const sourceCallout = screen.getByRole("link", { name: "Source on GitHub" }).parentElement;
     expect(sourceCallout).not.toBeNull();
     expect(getComputedStyle(sourceCallout!)).toMatchObject({
       position: "absolute",
@@ -212,7 +212,7 @@ describe("HomeView", () => {
     }
     expect(within(addressRow).getByRole("button", { name: "Copy IPv4 address" })).toBeEnabled();
 
-    expect(screen.getByText("open source")).toBeInTheDocument();
+    expect(screen.queryByText("open source")).not.toBeInTheDocument();
     const sourceLink = screen.getByRole("link", { name: "Source on GitHub" });
     expect(sourceLink).toHaveAttribute("href", "https://github.com/ergofriend/whoami");
     expect(sourceLink).toHaveClass(
