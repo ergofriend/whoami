@@ -11,6 +11,4 @@
     "directory": "./dist/public",
     "html_handling": "drop-trailing-slash",
   },
-  "rules": [{ "type": "ESModule", "globs": ["**/*.js", "**/*.mjs"] }],
-  "no_bundle": true,
 }
