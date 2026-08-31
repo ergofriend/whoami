@@ -19,7 +19,7 @@ beforeAll(() => {
 afterAll(() => stylesheet.remove());
 
 const emptyInspection: ServerInspection = {
-  publicIp: { address: null, version: null },
+  publicIp: { ipv4: null, ipv6: null, pseudoIpv4: null },
   network: { asn: null, organization: null },
   location: {
     continent: null,
@@ -47,7 +47,9 @@ const emptyInspection: ServerInspection = {
     "Accept-Encoding": null,
     "Accept-Language": null,
     "CF-Connecting-IP": null,
+    "CF-Connecting-IPv6": null,
     "CF-IPCountry": null,
+    "CF-Pseudo-IPv4": null,
     Host: null,
     "Sec-CH-UA": null,
     "Sec-CH-UA-Mobile": null,
@@ -90,7 +92,8 @@ describe("HomeView", () => {
     expect(disclosure).not.toBeNull();
     expect(disclosure).not.toHaveAttribute("open");
     expect(screen.getByRole("heading", { name: "Connection" })).not.toBeVisible();
-    expect(screen.queryByRole("button", { name: "Copy" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copy IPv4 address" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Copy IPv6 address" })).toBeDisabled();
 
     expect(
       screen.getByText("Approximate location derived from your public IP address."),
@@ -135,7 +138,7 @@ describe("HomeView", () => {
       <HomeView
         inspection={{
           ...emptyInspection,
-          publicIp: { address: "203.0.113.42", version: "IPv4" },
+          publicIp: { ipv4: "203.0.113.42", ipv6: null, pseudoIpv4: null },
         }}
       />,
     );
@@ -202,12 +205,12 @@ describe("HomeView", () => {
     }
     expect(
       Array.from(networkSection.querySelectorAll("dt")).map((term) => term.textContent),
-    ).toEqual(["IPv4 address", "ASN", "Organization"]);
+    ).toEqual(["IPv4 address", "IPv6 address", "ASN", "Organization"]);
     const addressRow = within(networkSection).getByText("IPv4 address").closest("div");
     if (!addressRow) {
       throw new Error("IPv4 address row was not rendered");
     }
-    expect(within(addressRow).getByRole("button", { name: "Copy" })).toBeInTheDocument();
+    expect(within(addressRow).getByRole("button", { name: "Copy IPv4 address" })).toBeEnabled();
 
     expect(screen.getByText("open source")).toBeInTheDocument();
     const sourceLink = screen.getByRole("link", { name: "Source on GitHub" });
@@ -243,6 +246,6 @@ describe("HomeView", () => {
     if (!requestHeaders) {
       throw new Error("Request headers section was not rendered");
     }
-    expect(within(requestHeaders).getAllByText("Not available").length).toBe(12);
+    expect(within(requestHeaders).getAllByText("Not available").length).toBe(14);
   });
 });

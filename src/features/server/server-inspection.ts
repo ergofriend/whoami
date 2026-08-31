@@ -5,7 +5,9 @@ export const ALLOWED_REQUEST_HEADERS = [
   "Accept-Encoding",
   "Accept-Language",
   "CF-Connecting-IP",
+  "CF-Connecting-IPv6",
   "CF-IPCountry",
+  "CF-Pseudo-IPv4",
   "Host",
   "Sec-CH-UA",
   "Sec-CH-UA-Mobile",
@@ -19,7 +21,11 @@ type Nullable<T> = T | null;
 type AllowedHeader = (typeof ALLOWED_REQUEST_HEADERS)[number];
 
 export type ServerInspection = {
-  publicIp: { address: Nullable<string>; version: Nullable<"IPv4" | "IPv6"> };
+  publicIp: {
+    ipv4: Nullable<string>;
+    ipv6: Nullable<string>;
+    pseudoIpv4: Nullable<string>;
+  };
   network: { asn: Nullable<number>; organization: Nullable<string> };
   location: {
     continent: Nullable<string>;
@@ -103,6 +109,12 @@ export function buildServerInspection(request: Request): ServerInspection {
     typeof rawCloudflare === "object" && rawCloudflare !== null ? rawCloudflare : {},
   );
   const publicIpAddress = parseNullableString(request.headers.get("CF-Connecting-IP"));
+  const connectingIpv6 = parseNullableString(request.headers.get("CF-Connecting-IPv6"));
+  const addedPseudoIpv4 = parseNullableString(request.headers.get("CF-Pseudo-IPv4"));
+  const publicIpVersion = detectIpVersion(publicIpAddress);
+  const realIpv6 = detectIpVersion(connectingIpv6) === "IPv6" ? connectingIpv6 : null;
+  const pseudoIpv4 = detectIpVersion(addedPseudoIpv4) === "IPv4" ? addedPseudoIpv4 : null;
+  const usesOverwrittenPseudoIpv4 = realIpv6 !== null && publicIpVersion === "IPv4";
   const headers = {} as ServerInspection["headers"];
 
   for (const header of ALLOWED_REQUEST_HEADERS) {
@@ -111,8 +123,9 @@ export function buildServerInspection(request: Request): ServerInspection {
 
   return {
     publicIp: {
-      address: publicIpAddress,
-      version: detectIpVersion(publicIpAddress),
+      ipv4: publicIpVersion === "IPv4" && !usesOverwrittenPseudoIpv4 ? publicIpAddress : null,
+      ipv6: realIpv6 ?? (publicIpVersion === "IPv6" ? publicIpAddress : null),
+      pseudoIpv4: usesOverwrittenPseudoIpv4 ? publicIpAddress : pseudoIpv4,
     },
     network: {
       asn: cloudflare.asn,

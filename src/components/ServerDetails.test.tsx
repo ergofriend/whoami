@@ -8,7 +8,7 @@ import { ServerDetails } from "./ServerDetails";
 import type { ServerInspection } from "../features/server/server-inspection";
 
 const inspection: ServerInspection = {
-  publicIp: { address: "203.0.113.42", version: "IPv4" },
+  publicIp: { ipv4: "203.0.113.42", ipv6: null, pseudoIpv4: null },
   network: { asn: 64500, organization: "Example Network" },
   location: {
     continent: "NA",
@@ -40,7 +40,9 @@ const inspection: ServerInspection = {
     "Accept-Encoding": "gzip, br",
     "Accept-Language": "en-US",
     "CF-Connecting-IP": "203.0.113.42",
+    "CF-Connecting-IPv6": null,
     "CF-IPCountry": "US",
+    "CF-Pseudo-IPv4": null,
     Host: "whoami.example.com",
     "Sec-CH-UA": "Chromium",
     "Sec-CH-UA-Mobile": "?0",
@@ -74,7 +76,6 @@ describe("ServerDetails", () => {
             items={[{ label: "Screen", value: "1 × 1" }]}
           />
         }
-        copyControl={<button type="button">Copy IP address</button>}
       />,
     );
 
@@ -114,15 +115,18 @@ describe("ServerDetails", () => {
     }
     expect(
       Array.from(networkSection.querySelectorAll("dt")).map((term) => term.textContent),
-    ).toEqual(["IPv4 address", "ASN", "Organization"]);
+    ).toEqual(["IPv4 address", "IPv6 address", "ASN", "Organization"]);
     const addressRow = within(networkSection).getByText("IPv4 address").closest("div");
     if (!addressRow) {
       throw new Error("IPv4 address row was not rendered");
     }
-    const copyControl = within(addressRow).getByRole("button", {
-      name: "Copy IP address",
-    });
-    expect(copyControl).toBeInTheDocument();
+    expect(within(addressRow).getByRole("button", { name: "Copy IPv4 address" })).toBeEnabled();
+    const ipv6Row = within(networkSection).getByText("IPv6 address").closest("div");
+    if (!ipv6Row) {
+      throw new Error("IPv6 address row was not rendered");
+    }
+    expect(within(ipv6Row).getByText("Not available")).toBeInTheDocument();
+    expect(within(ipv6Row).getByRole("button", { name: "Copy IPv6 address" })).toBeDisabled();
 
     const headerHeading = screen.getByRole("heading", { name: "Request headers", level: 2 });
     const headerSection = headerHeading.closest("section");
@@ -139,10 +143,9 @@ describe("ServerDetails", () => {
       <ServerDetails
         inspection={{
           ...inspection,
-          publicIp: { address: "2001:db8::42", version: "IPv6" },
+          publicIp: { ipv4: null, ipv6: "2001:db8::42", pseudoIpv4: null },
         }}
         browserDetails={null}
-        copyControl={<button type="button">Copy IP address</button>}
       />,
     );
 
@@ -153,6 +156,27 @@ describe("ServerDetails", () => {
       throw new Error("Network section was not rendered");
     }
     expect(within(networkSection).getByText("IPv6 address")).toBeInTheDocument();
-    expect(within(networkSection).queryByText("IPv4 address")).not.toBeInTheDocument();
+    expect(within(networkSection).getByText("IPv4 address")).toBeInTheDocument();
+  });
+
+  it("shows Cloudflare pseudo IPv4 as a separate value", () => {
+    render(
+      <ServerDetails
+        inspection={{
+          ...inspection,
+          publicIp: { ipv4: null, ipv6: "2001:db8::42", pseudoIpv4: "240.16.0.1" },
+        }}
+        browserDetails={null}
+      />,
+    );
+
+    const networkSection = screen
+      .getByRole("heading", { name: "Network", level: 2 })
+      .closest("section");
+    if (!networkSection) {
+      throw new Error("Network section was not rendered");
+    }
+    expect(within(networkSection).getByText("Pseudo IPv4")).toBeInTheDocument();
+    expect(within(networkSection).getByText("240.16.0.1")).toBeInTheDocument();
   });
 });

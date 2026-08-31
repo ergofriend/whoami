@@ -36,4 +36,16 @@ describe("CopyButton", () => {
 
     expect(await screen.findByRole("status")).toHaveTextContent("Copy failed.");
   });
+
+  it("stays visible and disabled when no value is available", () => {
+    const writeText = vi.fn();
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+
+    render(<CopyButton value={null} label="Copy" accessibleLabel="Copy IPv6 address" />);
+
+    const button = screen.getByRole("button", { name: "Copy IPv6 address" });
+    expect(button).toBeDisabled();
+    fireEvent.click(button);
+    expect(writeText).not.toHaveBeenCalled();
+  });
 });

@@ -62,7 +62,11 @@ describe("buildServerInspection", () => {
       ),
     );
 
-    expect(result.publicIp).toEqual({ address: "203.0.113.42", version: "IPv4" });
+    expect(result.publicIp).toEqual({
+      ipv4: "203.0.113.42",
+      ipv6: null,
+      pseudoIpv4: null,
+    });
     expect(result.network).toEqual({ asn: 64500, organization: "Example Network" });
     expect(result.location.region).toBeNull();
     expect(result.connection.httpProtocol).toBe("HTTP/3");
@@ -72,6 +76,38 @@ describe("buildServerInspection", () => {
     expect(result.headers["User-Agent"]).toBe("whoami-test-agent/1.0");
     expect(JSON.stringify(result)).not.toContain("secret-");
     expect(Object.keys(result.headers)).toEqual(ALLOWED_REQUEST_HEADERS);
+  });
+
+  it("keeps the real IPv6 separate from Cloudflare pseudo IPv4", () => {
+    const result = buildServerInspection(
+      createRequest({
+        "cf-connecting-ip": "240.16.0.1",
+        "cf-connecting-ipv6": "2001:db8::42",
+      }),
+    );
+
+    expect(result.publicIp).toEqual({
+      ipv4: null,
+      ipv6: "2001:db8::42",
+      pseudoIpv4: "240.16.0.1",
+    });
+    expect(result.headers["CF-Connecting-IPv6"]).toBe("2001:db8::42");
+  });
+
+  it("exposes an added pseudo IPv4 alongside the real IPv6", () => {
+    const result = buildServerInspection(
+      createRequest({
+        "cf-connecting-ip": "2001:db8::42",
+        "cf-pseudo-ipv4": "240.16.0.1",
+      }),
+    );
+
+    expect(result.publicIp).toEqual({
+      ipv4: null,
+      ipv6: "2001:db8::42",
+      pseudoIpv4: "240.16.0.1",
+    });
+    expect(result.headers["CF-Pseudo-IPv4"]).toBe("240.16.0.1");
   });
 
   it("normalizes invalid Cloudflare values without discarding valid siblings", () => {

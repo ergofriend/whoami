@@ -5,14 +5,17 @@ import { useState } from "react";
 import { SketchButton } from "./Sketch";
 
 type CopyButtonProps = {
-  value: string;
+  value: string | null;
   label: string;
+  accessibleLabel?: string;
 };
 
-export function CopyButton({ value, label }: CopyButtonProps) {
+export function CopyButton({ value, label, accessibleLabel }: CopyButtonProps) {
   const [status, setStatus] = useState<"" | "success" | "error">("");
 
   async function copy() {
+    if (value === null) return;
+
     try {
       await navigator.clipboard.writeText(value);
       setStatus("success");
@@ -26,6 +29,8 @@ export function CopyButton({ value, label }: CopyButtonProps) {
       <SketchButton
         className="copy-button"
         data-state={status || undefined}
+        disabled={value === null}
+        aria-label={accessibleLabel}
         onClick={() => void copy()}
         variant="solid"
       >

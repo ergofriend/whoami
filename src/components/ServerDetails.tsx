@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { ServerInspection } from "../features/server/server-inspection";
+import { CopyButton } from "./CopyButton";
 import { KeyValueSection } from "./KeyValueSection";
 import { SketchUnderline } from "./Sketch";
 
@@ -8,14 +9,12 @@ type ServerDetailsProps = {
   inspection: ServerInspection;
   browserDetails: ReactNode;
   extendedBrowserDetails?: ReactNode;
-  copyControl?: ReactNode;
 };
 
 export function ServerDetails({
   inspection,
   browserDetails,
   extendedBrowserDetails,
-  copyControl,
 }: ServerDetailsProps) {
   const requestHeaderItems = Object.entries(inspection.headers).map(([label, value]) => ({
     label,
@@ -28,13 +27,42 @@ export function ServerDetails({
         title="Network"
         items={[
           {
-            label:
-              inspection.publicIp.version === null
-                ? "IP address"
-                : `${inspection.publicIp.version} address`,
-            value: inspection.publicIp.address,
-            action: copyControl,
+            label: "IPv4 address",
+            value: inspection.publicIp.ipv4,
+            action: (
+              <CopyButton
+                value={inspection.publicIp.ipv4}
+                label="Copy"
+                accessibleLabel="Copy IPv4 address"
+              />
+            ),
           },
+          {
+            label: "IPv6 address",
+            value: inspection.publicIp.ipv6,
+            action: (
+              <CopyButton
+                value={inspection.publicIp.ipv6}
+                label="Copy"
+                accessibleLabel="Copy IPv6 address"
+              />
+            ),
+          },
+          ...(inspection.publicIp.pseudoIpv4 === null
+            ? []
+            : [
+                {
+                  label: "Pseudo IPv4",
+                  value: inspection.publicIp.pseudoIpv4,
+                  action: (
+                    <CopyButton
+                      value={inspection.publicIp.pseudoIpv4}
+                      label="Copy"
+                      accessibleLabel="Copy pseudo IPv4"
+                    />
+                  ),
+                },
+              ]),
           { label: "ASN", value: inspection.network.asn },
           { label: "Organization", value: inspection.network.organization },
         ]}

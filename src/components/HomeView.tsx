@@ -1,6 +1,5 @@
 import type { ServerInspection } from "../features/server/server-inspection";
 import { BrowserDetails } from "./BrowserDetails";
-import { CopyButton } from "./CopyButton";
 import { ServerDetails } from "./ServerDetails";
 import { SketchBadgeLink, SketchHighlight, SketchUnderline } from "./Sketch";
 
@@ -37,11 +36,6 @@ export function HomeView({ inspection }: HomeViewProps) {
           inspection={inspection}
           browserDetails={<BrowserDetails groups={["browser"]} />}
           extendedBrowserDetails={<BrowserDetails groups={["device", "preferences"]} />}
-          copyControl={
-            inspection.publicIp.address === null ? undefined : (
-              <CopyButton value={inspection.publicIp.address} label="Copy" />
-            )
-          }
         />
       </main>
       <footer className="site-footer">
