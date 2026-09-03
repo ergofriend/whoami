@@ -369,8 +369,9 @@ a:focus-visible,
 
 .details-stack {
   display: grid;
+  width: min(100%, 52rem);
   gap: clamp(2rem, 5vw, 3.5rem);
-  margin-top: 2rem;
+  margin: 2rem auto 0;
 }
 
 .trust-assurances {
