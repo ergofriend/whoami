@@ -11,7 +11,7 @@
   --drawably-success: #277c40;
   --drawably-error: #c43d2f;
   --drawably-width: 1.75;
-  --surface-browser: #ebe7fa;
+  --surface-browser: rgb(89 71 168 / 6%);
   --ink-muted: #676156;
   --z-annotation: 1;
 }
@@ -61,7 +61,7 @@ a:focus-visible,
 .site-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: 2rem;
   margin-bottom: clamp(2.25rem, 6vw, 4rem);
 }
@@ -97,7 +97,8 @@ a:focus-visible,
 
 .site-header-actions {
   flex: 0 0 auto;
-  transform: rotate(3deg);
+  margin-bottom: 0.15rem;
+  transform: rotate(1.5deg);
 }
 
 .repository-link.drawably-badge {
@@ -259,21 +260,21 @@ a:focus-visible,
 
 .summary-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(15rem, 0.7fr);
-  gap: clamp(2rem, 5vw, 4rem);
+  grid-template-columns: minmax(0, 1.55fr) minmax(14rem, 0.65fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
   margin-top: clamp(2.5rem, 6vw, 4rem);
 }
 
 .summary-primary {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
   gap: clamp(1.75rem, 4vw, 3rem);
 }
 
 .browser-summary {
   min-width: 0;
   align-self: start;
-  padding: clamp(1.25rem, 3vw, 1.75rem);
+  padding: clamp(1.1rem, 2.5vw, 1.5rem);
   background: var(--surface-browser);
 }
 
@@ -394,7 +395,7 @@ a:focus-visible,
   margin: 0;
 }
 
-@media (max-width: 48rem) {
+@media (max-width: 48.0625rem) {
   .public-address-panel > section,
   .summary-layout,
   .summary-primary {
