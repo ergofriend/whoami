@@ -118,6 +118,12 @@ a:focus-visible,
   font-weight: 400;
 }
 
+.sketch-heading .drawably-host,
+.site-intro .drawably-host,
+.copy-annotation .drawably-host {
+  font-family: inherit;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -195,6 +201,7 @@ a:focus-visible,
   position: absolute;
   right: 28%;
   bottom: -1rem;
+  font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
 }
 
 .drawably-arrow {
