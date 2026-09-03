@@ -28,7 +28,6 @@ export function CopyButton({ value, label, accessibleLabel }: CopyButtonProps) {
     <div className="copy-control">
       <SketchButton
         className="copy-button"
-        data-state={status || undefined}
         disabled={value === null}
         aria-label={accessibleLabel}
         onClick={() => void copy()}

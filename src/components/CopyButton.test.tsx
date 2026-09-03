@@ -11,7 +11,7 @@ describe("CopyButton", () => {
     vi.restoreAllMocks();
   });
 
-  it("copies the supplied value and announces success after interaction", async () => {
+  it("copies the value and announces success without changing the button", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
 
@@ -20,21 +20,27 @@ describe("CopyButton", () => {
     fireEvent.click(button);
 
     expect(await screen.findByRole("status")).toHaveTextContent("Copied!");
+    expect(button).toHaveTextContent("Copy IP");
+    expect(button).not.toHaveAttribute("data-state");
+    expect(button).toHaveClass("drawably-button--solid");
     expect(button).toHaveClass("drawably-button", "drawably-button--solid");
-    expect(button).toHaveAttribute("data-state", "success");
     expect(writeText).toHaveBeenCalledWith("203.0.113.42");
   });
 
-  it("announces a clipboard failure after interaction", async () => {
+  it("announces failure without changing the button", async () => {
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
       value: { writeText: vi.fn().mockRejectedValue(new Error("blocked")) },
     });
 
     render(<CopyButton value="203.0.113.42" label="Copy IP" />);
-    fireEvent.click(screen.getByRole("button", { name: "Copy IP" }));
+    const button = screen.getByRole("button", { name: "Copy IP" });
+    fireEvent.click(button);
 
     expect(await screen.findByRole("status")).toHaveTextContent("Copy failed.");
+    expect(button).toHaveTextContent("Copy IP");
+    expect(button).not.toHaveAttribute("data-state");
+    expect(button).toHaveClass("drawably-button--solid");
   });
 
   it("stays visible and disabled when no value is available", () => {
