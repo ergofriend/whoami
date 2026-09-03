@@ -283,3 +283,50 @@ a:focus-visible {
     gap: 0.2rem;
   }
 }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.public-address-panel > section {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(15rem, 0.8fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+.public-address-value {
+  margin: 0.45rem 0 1rem;
+  overflow-wrap: anywhere;
+  font-family: "Inter Variable", Inter, system-ui, sans-serif;
+  font-weight: 800;
+}
+
+.public-address-value--primary {
+  color: var(--drawably-stroke);
+  font-size: clamp(2.25rem, 6vw, 4.75rem);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.public-address-value--secondary {
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  line-height: 1.4;
+}
+
+@media (max-width: 48rem) {
+  .public-address-panel > section {
+    grid-template-columns: 1fr;
+  }
+  .drawably-arrow {
+    display: none;
+  }
+}
