@@ -79,9 +79,19 @@ describe("ServerDetails", () => {
       />,
     );
 
-    fireEvent.click(screen.getByText("More details"));
+    const addressPanel = screen.getByRole("region", { name: "Public IP addresses" });
+    expect(within(addressPanel).getByText("203.0.113.42")).toBeInTheDocument();
+    expect(within(addressPanel).getByRole("button", { name: "Copy IPv4 address" })).toBeEnabled();
+
+    const networkSection = screen.getByRole("region", { name: "Network" });
+    expect(
+      Array.from(networkSection.querySelectorAll("dt")).map((term) => term.textContent),
+    ).toEqual(["ASN", "Organization"]);
+
+    fireEvent.click(screen.getByText("More technical details"));
 
     expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
+      "Public IP addresses",
       "Network",
       "Approximate location",
       "Browser",
@@ -108,26 +118,6 @@ describe("ServerDetails", () => {
     expect(within(locationSection).getByText("Region")).toBeInTheDocument();
     expect(within(locationSection).getAllByText("Not available")).toHaveLength(1);
 
-    const networkHeading = screen.getByRole("heading", { name: "Network", level: 2 });
-    const networkSection = networkHeading.closest("section");
-    if (!networkSection) {
-      throw new Error("Network section was not rendered");
-    }
-    expect(
-      Array.from(networkSection.querySelectorAll("dt")).map((term) => term.textContent),
-    ).toEqual(["IPv4 address", "IPv6 address", "ASN", "Organization"]);
-    const addressRow = within(networkSection).getByText("IPv4 address").closest("div");
-    if (!addressRow) {
-      throw new Error("IPv4 address row was not rendered");
-    }
-    expect(within(addressRow).getByRole("button", { name: "Copy IPv4 address" })).toBeEnabled();
-    const ipv6Row = within(networkSection).getByText("IPv6 address").closest("div");
-    if (!ipv6Row) {
-      throw new Error("IPv6 address row was not rendered");
-    }
-    expect(within(ipv6Row).getByText("Not available")).toBeInTheDocument();
-    expect(within(ipv6Row).getByRole("button", { name: "Copy IPv6 address" })).toBeDisabled();
-
     const headerHeading = screen.getByRole("heading", { name: "Request headers", level: 2 });
     const headerSection = headerHeading.closest("section");
     if (!headerSection) {
@@ -138,7 +128,7 @@ describe("ServerDetails", () => {
     ).toEqual(Object.keys(inspection.headers));
   });
 
-  it("labels an IPv6 connection in the merged Network section", () => {
+  it("labels an IPv6 connection in the public address panel", () => {
     render(
       <ServerDetails
         inspection={{
@@ -149,14 +139,10 @@ describe("ServerDetails", () => {
       />,
     );
 
-    const networkSection = screen
-      .getByRole("heading", { name: "Network", level: 2 })
-      .closest("section");
-    if (!networkSection) {
-      throw new Error("Network section was not rendered");
-    }
-    expect(within(networkSection).getByText("IPv6 address")).toBeInTheDocument();
-    expect(within(networkSection).getByText("IPv4 address")).toBeInTheDocument();
+    const addressPanel = screen.getByRole("region", { name: "Public IP addresses" });
+    expect(within(addressPanel).getByText("Your IPv6 address")).toBeInTheDocument();
+    expect(within(addressPanel).getByText("2001:db8::42")).toBeInTheDocument();
+    expect(within(addressPanel).getByText("Not available")).toBeInTheDocument();
   });
 
   it("shows Cloudflare pseudo IPv4 as a separate value", () => {
@@ -170,13 +156,9 @@ describe("ServerDetails", () => {
       />,
     );
 
-    const networkSection = screen
-      .getByRole("heading", { name: "Network", level: 2 })
-      .closest("section");
-    if (!networkSection) {
-      throw new Error("Network section was not rendered");
-    }
+    const networkSection = screen.getByRole("region", { name: "Network" });
     expect(within(networkSection).getByText("Pseudo IPv4")).toBeInTheDocument();
     expect(within(networkSection).getByText("240.16.0.1")).toBeInTheDocument();
+    expect(within(networkSection).getByRole("button", { name: "Copy pseudo IPv4" })).toBeEnabled();
   });
 });

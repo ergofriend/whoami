@@ -3,7 +3,8 @@ import type { ReactNode } from "react";
 import type { ServerInspection } from "../features/server/server-inspection";
 import { CopyButton } from "./CopyButton";
 import { KeyValueSection } from "./KeyValueSection";
-import { SketchUnderline } from "./Sketch";
+import { PublicAddressPanel } from "./PublicAddressPanel";
+import { SketchBadge, SketchDivider, SketchUnderline } from "./Sketch";
 
 type ServerDetailsProps = {
   inspection: ServerInspection;
@@ -23,75 +24,63 @@ export function ServerDetails({
 
   return (
     <>
-      <KeyValueSection
-        title="Network"
-        items={[
-          {
-            label: "IPv4 address",
-            value: inspection.publicIp.ipv4,
-            action: (
-              <CopyButton
-                value={inspection.publicIp.ipv4}
-                label="Copy"
-                accessibleLabel="Copy IPv4 address"
-              />
-            ),
-          },
-          {
-            label: "IPv6 address",
-            value: inspection.publicIp.ipv6,
-            action: (
-              <CopyButton
-                value={inspection.publicIp.ipv6}
-                label="Copy"
-                accessibleLabel="Copy IPv6 address"
-              />
-            ),
-          },
-          ...(inspection.publicIp.pseudoIpv4 === null
-            ? []
-            : [
-                {
-                  label: "Pseudo IPv4",
-                  value: inspection.publicIp.pseudoIpv4,
-                  action: (
-                    <CopyButton
-                      value={inspection.publicIp.pseudoIpv4}
-                      label="Copy"
-                      accessibleLabel="Copy pseudo IPv4"
-                    />
-                  ),
-                },
-              ]),
-          { label: "ASN", value: inspection.network.asn },
-          { label: "Organization", value: inspection.network.organization },
-        ]}
-      />
+      <PublicAddressPanel ipv4={inspection.publicIp.ipv4} ipv6={inspection.publicIp.ipv6} />
+      <div className="summary-layout">
+        <div className="summary-primary">
+          <KeyValueSection
+            className="network-summary"
+            title="Network"
+            items={[
+              ...(inspection.publicIp.pseudoIpv4 === null
+                ? []
+                : [
+                    {
+                      label: "Pseudo IPv4",
+                      value: inspection.publicIp.pseudoIpv4,
+                      action: (
+                        <CopyButton
+                          value={inspection.publicIp.pseudoIpv4}
+                          label="Copy"
+                          accessibleLabel="Copy pseudo IPv4"
+                        />
+                      ),
+                    },
+                  ]),
+              { label: "ASN", value: inspection.network.asn },
+              { label: "Organization", value: inspection.network.organization },
+            ]}
+          />
+          <KeyValueSection
+            className="location-summary"
+            title="Approximate location"
+            description="Approximate location derived from your public IP address."
+            items={[
+              { label: "Continent", value: inspection.location.continent },
+              { label: "Country", value: inspection.location.country },
+              { label: "Region", value: inspection.location.region },
+              { label: "Region code", value: inspection.location.regionCode },
+              { label: "City", value: inspection.location.city },
+              { label: "Postal code", value: inspection.location.postalCode },
+              { label: "Metro code", value: inspection.location.metroCode },
+              { label: "Latitude", value: inspection.location.latitude },
+              { label: "Longitude", value: inspection.location.longitude },
+              { label: "Timezone", value: inspection.location.timezone },
+            ]}
+          >
+            <SketchBadge className="approximation-badge" variant="outline">
+              IP-derived · approximate
+            </SketchBadge>
+          </KeyValueSection>
+        </div>
+        <div className="browser-summary">{browserDetails}</div>
+      </div>
 
-      <KeyValueSection
-        title="Approximate location"
-        description="Approximate location derived from your public IP address."
-        items={[
-          { label: "Continent", value: inspection.location.continent },
-          { label: "Country", value: inspection.location.country },
-          { label: "Region", value: inspection.location.region },
-          { label: "Region code", value: inspection.location.regionCode },
-          { label: "City", value: inspection.location.city },
-          { label: "Postal code", value: inspection.location.postalCode },
-          { label: "Metro code", value: inspection.location.metroCode },
-          { label: "Latitude", value: inspection.location.latitude },
-          { label: "Longitude", value: inspection.location.longitude },
-          { label: "Timezone", value: inspection.location.timezone },
-        ]}
-      />
-
-      {browserDetails}
-
+      <SketchDivider className="details-divider" />
       <details className="more-details">
         <summary className="sketch-heading">
-          <SketchUnderline>More details</SketchUnderline>
+          <SketchUnderline>More technical details</SketchUnderline>
         </summary>
-        <div className="information-stack details-stack">
+        <div className="details-stack">
           <KeyValueSection
             title="Connection"
             items={[
