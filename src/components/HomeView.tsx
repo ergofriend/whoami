@@ -1,7 +1,7 @@
 import type { ServerInspection } from "../features/server/server-inspection";
 import { BrowserDetails } from "./BrowserDetails";
 import { ServerDetails } from "./ServerDetails";
-import { SketchBadgeLink, SketchHighlight, SketchUnderline } from "./Sketch";
+import { SketchBadgeLink, SketchHighlight, SketchList, SketchUnderline } from "./Sketch";
 
 type HomeViewProps = {
   inspection: ServerInspection;
@@ -11,14 +11,16 @@ export function HomeView({ inspection }: HomeViewProps) {
   return (
     <div className="site-shell">
       <header className="site-header">
-        <h1 className="sketch-heading">
-          <SketchUnderline>whoami</SketchUnderline>
-        </h1>
-        <p className="site-intro">
-          See the <SketchHighlight>network and browser information</SketchHighlight> available to{" "}
-          this site.
-        </p>
-        <div className="source-callout">
+        <div className="site-header-copy">
+          <h1 className="sketch-heading">
+            <SketchUnderline>whoami</SketchUnderline>
+          </h1>
+          <p className="site-intro">
+            See the <SketchHighlight>network and browser information</SketchHighlight> available to
+            this site.
+          </p>
+        </div>
+        <div className="site-header-actions">
           <SketchBadgeLink className="repository-link" href="https://github.com/ergofriend/whoami">
             <svg aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16">
               <path
@@ -30,12 +32,17 @@ export function HomeView({ inspection }: HomeViewProps) {
           </SketchBadgeLink>
         </div>
       </header>
-      <main className="information-stack">
+      <main className="inspection-main">
         <ServerDetails
           inspection={inspection}
           browserDetails={<BrowserDetails groups={["browser"]} />}
           extendedBrowserDetails={<BrowserDetails groups={["device", "preferences"]} />}
         />
+        <SketchList className="trust-assurances" marker="check" aria-label="Privacy assurances">
+          <li>No storage</li>
+          <li>No GPS</li>
+          <li>Browser data stays local</li>
+        </SketchList>
       </main>
       <footer className="site-footer">
         <p>This site does not store the information displayed above.</p>

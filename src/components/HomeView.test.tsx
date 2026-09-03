@@ -71,7 +71,7 @@ describe("HomeView", () => {
         .getAllByRole("heading")
         .filter((heading) => heading.closest("details") === null)
         .map((heading) => heading.textContent),
-    ).toEqual(["whoami", "Network", "Approximate location", "Browser"]);
+    ).toEqual(["whoami", "Public IP addresses", "Network", "Approximate location", "Browser"]);
 
     const banner = screen.getByRole("banner");
     expect(banner).toBeInTheDocument();
@@ -80,14 +80,14 @@ describe("HomeView", () => {
     );
     expect(screen.getByRole("main")).toBeInTheDocument();
     expect(screen.getByRole("contentinfo")).toBeInTheDocument();
-    await waitFor(() => {
-      expect(document.querySelectorAll(".drawably-card")).toHaveLength(9);
-    });
-    for (const heading of screen.getAllByRole("heading")) {
+    await waitFor(() => expect(document.querySelectorAll(".drawably-card")).toHaveLength(1));
+    for (const heading of screen
+      .getAllByRole("heading")
+      .filter((heading) => !heading.classList.contains("visually-hidden"))) {
       expect(heading).toHaveClass("sketch-heading");
     }
 
-    const summary = screen.getByText("More details");
+    const summary = screen.getByText("More technical details");
     const disclosure = summary.closest("details");
     expect(disclosure).not.toBeNull();
     expect(disclosure).not.toHaveAttribute("open");
@@ -101,13 +101,14 @@ describe("HomeView", () => {
     expect(screen.getAllByText("Not available").length).toBeGreaterThan(0);
   });
 
-  it("reveals the remaining information sections from More details", async () => {
+  it("reveals the remaining information sections from More technical details", async () => {
     render(<HomeView inspection={emptyInspection} />);
 
-    fireEvent.click(screen.getByText("More details"));
+    fireEvent.click(screen.getByText("More technical details"));
 
     expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
       "whoami",
+      "Public IP addresses",
       "Network",
       "Approximate location",
       "Browser",
@@ -120,17 +121,20 @@ describe("HomeView", () => {
     ]);
   });
 
-  it("pins the source badge diagonally to the header's upper-right corner", () => {
+  it("uses one address card and exposes concise trust assurances", async () => {
     render(<HomeView inspection={emptyInspection} />);
 
-    const sourceCallout = screen.getByRole("link", { name: "Source on GitHub" }).parentElement;
-    expect(sourceCallout).not.toBeNull();
-    expect(getComputedStyle(sourceCallout!)).toMatchObject({
-      position: "absolute",
-      right: "0px",
-      transform: "rotate(5deg)",
-    });
-    expect(getComputedStyle(screen.getByRole("banner"))).toMatchObject({ position: "relative" });
+    await waitFor(() => expect(document.querySelectorAll(".drawably-card")).toHaveLength(1));
+    const assurances = screen.getByRole("list", { name: "Privacy assurances" });
+    expect(
+      within(assurances)
+        .getAllByRole("listitem")
+        .map((item) => item.textContent),
+    ).toEqual(["No storage", "No GPS", "Browser data stays local"]);
+    expect(screen.getByRole("main")).toHaveClass("inspection-main");
+    expect(screen.getByRole("link", { name: "Source on GitHub" }).parentElement).toHaveClass(
+      "site-header-actions",
+    );
   });
 
   it("integrates browser details, an IP copy control, and the source link", async () => {
@@ -205,12 +209,10 @@ describe("HomeView", () => {
     }
     expect(
       Array.from(networkSection.querySelectorAll("dt")).map((term) => term.textContent),
-    ).toEqual(["IPv4 address", "IPv6 address", "ASN", "Organization"]);
-    const addressRow = within(networkSection).getByText("IPv4 address").closest("div");
-    if (!addressRow) {
-      throw new Error("IPv4 address row was not rendered");
-    }
-    expect(within(addressRow).getByRole("button", { name: "Copy IPv4 address" })).toBeEnabled();
+    ).toEqual(["ASN", "Organization"]);
+    const addressPanel = screen.getByRole("region", { name: "Public IP addresses" });
+    expect(within(addressPanel).getByText("203.0.113.42")).toBeInTheDocument();
+    expect(within(addressPanel).getByRole("button", { name: "Copy IPv4 address" })).toBeEnabled();
 
     expect(screen.queryByText("open source")).not.toBeInTheDocument();
     const sourceLink = screen.getByRole("link", { name: "Source on GitHub" });
@@ -238,7 +240,7 @@ describe("HomeView", () => {
       ),
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("More details"));
+    fireEvent.click(screen.getByText("More technical details"));
 
     const requestHeaders = screen
       .getByRole("heading", { name: "Request headers", level: 2 })
