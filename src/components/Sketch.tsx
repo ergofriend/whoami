@@ -3,6 +3,7 @@
 import {
   useEffect,
   useRef,
+  useSyncExternalStore,
   type AnchorHTMLAttributes,
   type ButtonHTMLAttributes,
   type HTMLAttributes,
@@ -27,6 +28,35 @@ const sketchClasses = {
   underline: "drawably-host drawably-underline",
   badge: "drawably-host drawably-badge drawably-badge--outline",
 } as const;
+
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
+
+function readReducedMotionPreference(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia(reducedMotionQuery).matches
+  );
+}
+
+function subscribeToReducedMotion(onChange: () => void): () => void {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return () => {};
+
+  const mediaQueryList = window.matchMedia(reducedMotionQuery);
+  if (typeof mediaQueryList.addEventListener === "function") {
+    mediaQueryList.addEventListener("change", onChange);
+    return () => mediaQueryList.removeEventListener("change", onChange);
+  }
+  if (typeof mediaQueryList.addListener === "function") {
+    mediaQueryList.addListener(onChange);
+    return () => mediaQueryList.removeListener(onChange);
+  }
+  return () => {};
+}
+
+function usePrefersReducedMotion(): boolean {
+  return useSyncExternalStore(subscribeToReducedMotion, readReducedMotionPreference, () => false);
+}
 
 function classNames(...names: Array<string | undefined>): string {
   return names.filter(Boolean).join(" ");
@@ -185,15 +215,17 @@ type SketchArrowProps = {
 };
 
 export function SketchArrow({ from, to }: SketchArrowProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   useEffect(() => {
     if (from.current === null || to.current === null) return;
     const sketch = drawablyArrow(from.current, to.current, {
       roughness: 0.8,
-      boil: 0.1,
+      boil: prefersReducedMotion ? 0 : 0.1,
       width: 1.5,
     });
     return () => sketch.destroy();
-  }, [from, to]);
+  }, [from, to, prefersReducedMotion]);
 
   return null;
 }

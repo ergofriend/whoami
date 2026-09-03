@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { createRef } from "react";
-import { cleanup, render } from "@testing-library/react";
+import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const drawably = vi.hoisted(() => {
@@ -215,5 +215,81 @@ describe("Sketch", () => {
 
     expect(sketches).toHaveLength(4);
     for (const sketch of sketches) expect(sketch.destroy).toHaveBeenCalledOnce();
+  });
+
+  it("passes a static arrow sketch when reduced motion is requested", () => {
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = vi.fn(
+      (query: string) =>
+        ({
+          matches: query === "(prefers-reduced-motion: reduce)",
+          media: query,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
+
+    try {
+      const { container } = render(<ArrowHarness />);
+      const arrowFrom = container.querySelector("[data-testid='arrow-from']");
+      const arrowTo = container.querySelector("[data-testid='arrow-to']");
+
+      expect(drawably.drawablyArrow).toHaveBeenCalledWith(arrowFrom, arrowTo, {
+        roughness: 0.8,
+        boil: 0,
+        width: 1.5,
+      });
+    } finally {
+      window.matchMedia = originalMatchMedia;
+    }
+  });
+
+  it("updates the arrow sketch when reduced-motion preference changes", async () => {
+    let reducedMotion = false;
+    const changeListeners = new Set<() => void>();
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = vi.fn(
+      (query: string) =>
+        ({
+          matches: query === "(prefers-reduced-motion: reduce)" && reducedMotion,
+          media: query,
+          onchange: null,
+          addListener: (listener: () => void) => changeListeners.add(listener),
+          removeListener: (listener: () => void) => changeListeners.delete(listener),
+          addEventListener: (_type: string, listener: () => void) => changeListeners.add(listener),
+          removeEventListener: (_type: string, listener: () => void) =>
+            changeListeners.delete(listener),
+          dispatchEvent: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
+
+    try {
+      const { container } = render(<ArrowHarness />);
+      const arrowFrom = container.querySelector("[data-testid='arrow-from']");
+      const arrowTo = container.querySelector("[data-testid='arrow-to']");
+
+      expect(drawably.drawablyArrow).toHaveBeenCalledWith(arrowFrom, arrowTo, {
+        roughness: 0.8,
+        boil: 0.1,
+        width: 1.5,
+      });
+
+      await act(async () => {
+        reducedMotion = true;
+        for (const listener of changeListeners) listener();
+      });
+
+      expect(drawably.drawablyArrow).toHaveBeenNthCalledWith(2, arrowFrom, arrowTo, {
+        roughness: 0.8,
+        boil: 0,
+        width: 1.5,
+      });
+    } finally {
+      window.matchMedia = originalMatchMedia;
+    }
   });
 });
