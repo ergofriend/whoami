@@ -195,11 +195,13 @@ a:focus-visible,
   position: absolute;
   top: -1rem;
   right: 1rem;
+  padding: 0.15rem 0.55rem;
   color: #292720;
-  font-weight: 700;
-  text-shadow:
-    0 0 3px var(--drawably-paper),
-    0 0 3px var(--drawably-paper);
+  background: var(--drawably-paper);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
 }
 
 .copy-annotation {

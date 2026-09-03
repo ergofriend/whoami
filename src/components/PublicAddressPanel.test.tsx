@@ -24,7 +24,7 @@ describe("PublicAddressPanel", () => {
     expect(within(panel).getByRole("button", { name: "Copy IPv6 address" })).toHaveClass(
       "drawably-button--outline",
     );
-    expect(within(panel).getByText("private by design")).toBeInTheDocument();
+    expect(within(panel).getByText("private by design")).toHaveClass("drawably-badge--outline");
     expect(within(panel).getByText("not stored")).toBeInTheDocument();
   });
 

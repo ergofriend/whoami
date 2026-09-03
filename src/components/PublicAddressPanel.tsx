@@ -20,7 +20,7 @@ export function PublicAddressPanel({ ipv4, ipv6 }: PublicAddressPanelProps) {
         <h2 id="public-ip-addresses" className="visually-hidden">
           Public IP addresses
         </h2>
-        <SketchBadge className="privacy-badge" variant="scribble">
+        <SketchBadge className="privacy-badge" variant="outline">
           private by design
         </SketchBadge>
         <div className="public-address-column public-address-column--primary">
