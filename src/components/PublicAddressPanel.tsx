@@ -8,9 +8,10 @@ import { SketchArrow, SketchBadge, SketchCard, SketchCircle } from "./Sketch";
 type PublicAddressPanelProps = {
   ipv4: string | null;
   ipv6: string | null;
+  pseudoIpv4?: string | null;
 };
 
-export function PublicAddressPanel({ ipv4, ipv6 }: PublicAddressPanelProps) {
+export function PublicAddressPanel({ ipv4, ipv6, pseudoIpv4 = null }: PublicAddressPanelProps) {
   const annotationRef = useRef<HTMLSpanElement>(null);
   const primaryCopyRef = useRef<HTMLDivElement>(null);
 
@@ -43,6 +44,20 @@ export function PublicAddressPanel({ ipv4, ipv6 }: PublicAddressPanelProps) {
             accessibleLabel="Copy IPv6 address"
             variant="outline"
           />
+          {pseudoIpv4 === null ? null : (
+            <div className="pseudo-address">
+              <div>
+                <p className="public-address-label">Pseudo IPv4</p>
+                <p className="public-address-value public-address-value--pseudo">{pseudoIpv4}</p>
+              </div>
+              <CopyButton
+                value={pseudoIpv4}
+                label="Copy"
+                accessibleLabel="Copy pseudo IPv4"
+                variant="outline"
+              />
+            </div>
+          )}
         </div>
         <span ref={annotationRef} className="copy-annotation" aria-hidden="true">
           <SketchCircle>not stored</SketchCircle>

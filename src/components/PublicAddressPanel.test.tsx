@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("./Sketch", async (importOriginal) => {
@@ -33,5 +33,25 @@ describe("PublicAddressPanel", () => {
     expect(screen.getAllByText("Not available")).toHaveLength(2);
     expect(screen.getByRole("button", { name: "Copy IPv4 address" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Copy IPv6 address" })).toBeDisabled();
+    expect(screen.queryByText("Pseudo IPv4")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Copy pseudo IPv4" })).not.toBeInTheDocument();
+  });
+
+  it("keeps Cloudflare pseudo IPv4 with the other copyable addresses", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+
+    render(<PublicAddressPanel ipv4={null} ipv6="2001:db8::42" pseudoIpv4="240.16.0.1" />);
+
+    const panel = screen.getByRole("region", { name: "Public IP addresses" });
+    expect(within(panel).getByText("Pseudo IPv4")).toBeInTheDocument();
+    expect(within(panel).getByText("240.16.0.1")).toBeInTheDocument();
+    const copyButton = within(panel).getByRole("button", { name: "Copy pseudo IPv4" });
+    fireEvent.click(copyButton);
+
+    expect(await within(panel).findByText("Copied!")).toBeInTheDocument();
+    expect(writeText).toHaveBeenCalledWith("240.16.0.1");
+    expect(copyButton).toHaveTextContent("Copy");
+    expect(copyButton).not.toHaveAttribute("data-state");
   });
 });

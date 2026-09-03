@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
 import type { ServerInspection } from "../features/server/server-inspection";
-import { CopyButton } from "./CopyButton";
 import { KeyValueSection } from "./KeyValueSection";
 import { PublicAddressPanel } from "./PublicAddressPanel";
 import { SketchBadge, SketchDivider, SketchUnderline } from "./Sketch";
@@ -24,54 +23,43 @@ export function ServerDetails({
 
   return (
     <>
-      <PublicAddressPanel ipv4={inspection.publicIp.ipv4} ipv6={inspection.publicIp.ipv6} />
+      <section className="connection-overview" aria-label="Connection summary">
+        <PublicAddressPanel
+          ipv4={inspection.publicIp.ipv4}
+          ipv6={inspection.publicIp.ipv6}
+          pseudoIpv4={inspection.publicIp.pseudoIpv4}
+        />
+        <KeyValueSection
+          className="network-summary"
+          title="Network"
+          items={[
+            { label: "ASN", value: inspection.network.asn },
+            { label: "Organization", value: inspection.network.organization },
+          ]}
+        />
+      </section>
       <div className="summary-layout">
-        <div className="summary-primary">
-          <KeyValueSection
-            className="network-summary"
-            title="Network"
-            items={[
-              ...(inspection.publicIp.pseudoIpv4 === null
-                ? []
-                : [
-                    {
-                      label: "Pseudo IPv4",
-                      value: inspection.publicIp.pseudoIpv4,
-                      action: (
-                        <CopyButton
-                          value={inspection.publicIp.pseudoIpv4}
-                          label="Copy"
-                          accessibleLabel="Copy pseudo IPv4"
-                        />
-                      ),
-                    },
-                  ]),
-              { label: "ASN", value: inspection.network.asn },
-              { label: "Organization", value: inspection.network.organization },
-            ]}
-          />
-          <KeyValueSection
-            className="location-summary"
-            title="Approximate location"
-            description="Approximate location derived from your public IP address."
-            items={[
-              { label: "Continent", value: inspection.location.continent },
-              { label: "Country", value: inspection.location.country },
-              { label: "Region", value: inspection.location.region },
-              { label: "Region code", value: inspection.location.regionCode },
-              { label: "City", value: inspection.location.city },
-              { label: "Postal code", value: inspection.location.postalCode },
-              { label: "Metro code", value: inspection.location.metroCode },
-              { label: "Latitude", value: inspection.location.latitude },
-              { label: "Longitude", value: inspection.location.longitude },
-              { label: "Timezone", value: inspection.location.timezone },
-            ]}
-          >
-            <SketchBadge className="approximation-badge" variant="outline">
-              IP-derived · approximate
-            </SketchBadge>
-          </KeyValueSection>
-        </div>
+        <KeyValueSection
+          className="location-summary"
+          title="Approximate location"
+          description="Approximate location derived from your public IP address."
+          items={[
+            { label: "Continent", value: inspection.location.continent },
+            { label: "Country", value: inspection.location.country },
+            { label: "Region", value: inspection.location.region },
+            { label: "Region code", value: inspection.location.regionCode },
+            { label: "City", value: inspection.location.city },
+            { label: "Postal code", value: inspection.location.postalCode },
+            { label: "Metro code", value: inspection.location.metroCode },
+            { label: "Latitude", value: inspection.location.latitude },
+            { label: "Longitude", value: inspection.location.longitude },
+            { label: "Timezone", value: inspection.location.timezone },
+          ]}
+        >
+          <SketchBadge className="approximation-badge" variant="outline">
+            IP-derived · approximate
+          </SketchBadge>
+        </KeyValueSection>
         <div className="browser-summary">{browserDetails}</div>
       </div>
 

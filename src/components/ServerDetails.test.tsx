@@ -83,10 +83,20 @@ describe("ServerDetails", () => {
     expect(within(addressPanel).getByText("203.0.113.42")).toBeInTheDocument();
     expect(within(addressPanel).getByRole("button", { name: "Copy IPv4 address" })).toBeEnabled();
 
-    const networkSection = screen.getByRole("region", { name: "Network" });
+    const connectionOverview = screen.getByRole("region", {
+      name: "Connection summary",
+    });
+    const networkSection = within(connectionOverview).getByRole("region", { name: "Network" });
     expect(
       Array.from(networkSection.querySelectorAll("dt")).map((term) => term.textContent),
     ).toEqual(["ASN", "Organization"]);
+
+    const summaryLayout = document.querySelector(".summary-layout");
+    expect(summaryLayout).not.toBeNull();
+    expect(Array.from(summaryLayout?.children ?? []).map((child) => child.className)).toEqual([
+      "key-value-section location-summary",
+      "browser-summary",
+    ]);
 
     fireEvent.click(screen.getByText("More technical details"));
 
@@ -156,9 +166,12 @@ describe("ServerDetails", () => {
       />,
     );
 
+    const addressPanel = screen.getByRole("region", { name: "Public IP addresses" });
+    expect(within(addressPanel).getByText("Pseudo IPv4")).toBeInTheDocument();
+    expect(within(addressPanel).getByText("240.16.0.1")).toBeInTheDocument();
+    expect(within(addressPanel).getByRole("button", { name: "Copy pseudo IPv4" })).toBeEnabled();
+
     const networkSection = screen.getByRole("region", { name: "Network" });
-    expect(within(networkSection).getByText("Pseudo IPv4")).toBeInTheDocument();
-    expect(within(networkSection).getByText("240.16.0.1")).toBeInTheDocument();
-    expect(within(networkSection).getByRole("button", { name: "Copy pseudo IPv4" })).toBeEnabled();
+    expect(within(networkSection).queryByText("Pseudo IPv4")).not.toBeInTheDocument();
   });
 });

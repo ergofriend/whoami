@@ -186,6 +186,22 @@ a:focus-visible,
   line-height: 1.4;
 }
 
+.public-address-value--pseudo {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.pseudo-address {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: end;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(89 71 168 / 20%);
+}
+
 .privacy-badge,
 .approximation-badge {
   font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
@@ -262,15 +278,41 @@ a:focus-visible,
 
 .summary-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(14rem, 0.65fr);
-  gap: clamp(2rem, 4vw, 3.5rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2.5rem, 6vw, 5rem);
   margin-top: clamp(2.5rem, 6vw, 4rem);
 }
 
-.summary-primary {
+.connection-overview {
   display: grid;
-  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
-  gap: clamp(1.75rem, 4vw, 3rem);
+}
+
+.network-summary {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.75rem clamp(1.5rem, 4vw, 3rem);
+  align-items: baseline;
+  width: min(100%, 64rem);
+  margin: clamp(1rem, 2vw, 1.5rem) auto 0;
+  padding-inline: clamp(0.25rem, 2vw, 1rem);
+}
+
+.key-value-section.network-summary h2 {
+  margin: 0;
+  color: #292720;
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+}
+
+.key-value-section.network-summary dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem clamp(2rem, 5vw, 4rem);
+}
+
+.key-value-section.network-summary dl > div {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
 }
 
 .browser-summary {
@@ -400,8 +442,11 @@ a:focus-visible,
 
 @media (max-width: 48.0625rem) {
   .public-address-panel > section,
-  .summary-layout,
-  .summary-primary {
+  .summary-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .network-summary {
     grid-template-columns: 1fr;
   }
 
