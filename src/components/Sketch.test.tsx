@@ -268,10 +268,67 @@ describe("Sketch", () => {
     );
 
     try {
-      const { container } = render(<ArrowHarness />);
+      const rendered = render(<ArrowHarness />);
+      const { container } = rendered;
+      const arrowFrom = container.querySelector("[data-testid='arrow-from']");
+      const arrowTo = container.querySelector("[data-testid='arrow-to']");
+      const initialSketch = drawably.sketches[0];
+
+      expect(drawably.drawablyArrow).toHaveBeenCalledWith(arrowFrom, arrowTo, {
+        roughness: 0.8,
+        boil: 0.1,
+        width: 1.5,
+      });
+      expect(initialSketch).toBeDefined();
+
+      await act(async () => {
+        reducedMotion = true;
+        for (const listener of changeListeners) listener();
+      });
+
+      expect(initialSketch?.destroy).toHaveBeenCalledOnce();
+
+      expect(drawably.drawablyArrow).toHaveBeenNthCalledWith(2, arrowFrom, arrowTo, {
+        roughness: 0.8,
+        boil: 0,
+        width: 1.5,
+      });
+
+      const replacementSketch = drawably.sketches[1];
+      expect(replacementSketch).toBeDefined();
+      rendered.unmount();
+      expect(replacementSketch?.destroy).toHaveBeenCalledOnce();
+      expect(changeListeners).toHaveLength(0);
+    } finally {
+      window.matchMedia = originalMatchMedia;
+    }
+  });
+
+  it("supports legacy reduced-motion media listeners", async () => {
+    let reducedMotion = false;
+    const changeListeners = new Set<() => void>();
+    const addListener = vi.fn((listener: () => void) => changeListeners.add(listener));
+    const removeListener = vi.fn((listener: () => void) => changeListeners.delete(listener));
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = vi.fn(
+      (query: string) =>
+        ({
+          matches: query === "(prefers-reduced-motion: reduce)" && reducedMotion,
+          media: query,
+          onchange: null,
+          addListener,
+          removeListener,
+          dispatchEvent: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
+
+    try {
+      const rendered = render(<ArrowHarness />);
+      const { container } = rendered;
       const arrowFrom = container.querySelector("[data-testid='arrow-from']");
       const arrowTo = container.querySelector("[data-testid='arrow-to']");
 
+      expect(addListener).toHaveBeenCalledOnce();
       expect(drawably.drawablyArrow).toHaveBeenCalledWith(arrowFrom, arrowTo, {
         roughness: 0.8,
         boil: 0.1,
@@ -288,6 +345,9 @@ describe("Sketch", () => {
         boil: 0,
         width: 1.5,
       });
+
+      rendered.unmount();
+      expect(removeListener).toHaveBeenCalledOnce();
     } finally {
       window.matchMedia = originalMatchMedia;
     }
