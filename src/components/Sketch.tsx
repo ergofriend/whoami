@@ -82,6 +82,7 @@ export function SketchCard({ children, className, ...props }: SketchCardProps) {
 
 export function SketchUnderline({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLSpanElement>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     if (ref.current === null) return;
@@ -91,7 +92,7 @@ export function SketchUnderline({ children }: { children: ReactNode }) {
       width: 1.5,
     });
     return () => sketch.destroy();
-  }, []);
+  }, [prefersReducedMotion]);
 
   return (
     <span ref={ref} className={sketchClasses.underline}>
@@ -191,12 +192,13 @@ export function SketchList({ children, className, marker = "dash", ...props }: S
 
 export function SketchCircle({ children, className, ...props }: HTMLAttributes<HTMLSpanElement>) {
   const ref = useRef<HTMLSpanElement>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     if (ref.current === null) return;
     const sketch = drawablyCircle(ref.current, { roughness: 0.9, boil: 0.15, width: 1.5 });
     return () => sketch.destroy();
-  }, []);
+  }, [prefersReducedMotion]);
 
   return (
     <span
@@ -241,12 +243,13 @@ export function SketchButton({
   ...props
 }: SketchButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     if (ref.current === null) return;
     const sketch = drawablyButton(ref.current, { variant });
     return () => sketch.destroy();
-  }, [variant]);
+  }, [variant, prefersReducedMotion]);
 
   return (
     <button

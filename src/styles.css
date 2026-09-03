@@ -8,8 +8,8 @@
   --drawably-stroke: #5947a8;
   --drawably-fill: #5947a8;
   --drawably-paper: #fffaf0;
-  --drawably-success: #278443;
-  --drawably-error: #c63d2f;
+  --drawably-success: #277c40;
+  --drawably-error: #c43d2f;
   --drawably-width: 1.75;
   --surface-browser: #ebe7fa;
   --ink-muted: #676156;
@@ -22,7 +22,6 @@
 
 html,
 body {
-  min-width: 320px;
   background: #f5efe2;
 }
 
@@ -186,6 +185,11 @@ a:focus-visible,
   line-height: 1.4;
 }
 
+.privacy-badge,
+.approximation-badge {
+  font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
+}
+
 .privacy-badge {
   position: absolute;
   top: -1rem;
@@ -246,11 +250,11 @@ a:focus-visible,
 }
 
 .copy-status--success {
-  color: #278443;
+  color: var(--drawably-success);
 }
 
 .copy-status--error {
-  color: #c63d2f;
+  color: var(--drawably-error);
 }
 
 .summary-layout {

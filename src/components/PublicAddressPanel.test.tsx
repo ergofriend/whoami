@@ -18,8 +18,12 @@ describe("PublicAddressPanel", () => {
     const panel = screen.getByRole("region", { name: "Public IP addresses" });
     expect(within(panel).getByText("203.0.113.42")).toHaveClass("public-address-value--primary");
     expect(within(panel).getByText("2001:db8::42")).toHaveClass("public-address-value--secondary");
-    expect(within(panel).getByRole("button", { name: "Copy IPv4 address" })).toBeEnabled();
-    expect(within(panel).getByRole("button", { name: "Copy IPv6 address" })).toBeEnabled();
+    expect(within(panel).getByRole("button", { name: "Copy IPv4 address" })).toHaveClass(
+      "drawably-button--solid",
+    );
+    expect(within(panel).getByRole("button", { name: "Copy IPv6 address" })).toHaveClass(
+      "drawably-button--outline",
+    );
     expect(within(panel).getByText("private by design")).toBeInTheDocument();
     expect(within(panel).getByText("not stored")).toBeInTheDocument();
   });

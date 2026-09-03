@@ -8,9 +8,10 @@ type CopyButtonProps = {
   value: string | null;
   label: string;
   accessibleLabel?: string;
+  variant?: "solid" | "outline";
 };
 
-export function CopyButton({ value, label, accessibleLabel }: CopyButtonProps) {
+export function CopyButton({ value, label, accessibleLabel, variant = "solid" }: CopyButtonProps) {
   const [status, setStatus] = useState<"" | "success" | "error">("");
 
   async function copy() {
@@ -31,7 +32,7 @@ export function CopyButton({ value, label, accessibleLabel }: CopyButtonProps) {
         disabled={value === null}
         aria-label={accessibleLabel}
         onClick={() => void copy()}
-        variant="solid"
+        variant={variant}
       >
         {label}
       </SketchButton>

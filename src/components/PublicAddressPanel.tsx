@@ -37,7 +37,12 @@ export function PublicAddressPanel({ ipv4, ipv6 }: PublicAddressPanelProps) {
           <p className="public-address-value public-address-value--secondary">
             {ipv6 ?? "Not available"}
           </p>
-          <CopyButton value={ipv6} label="Copy IPv6" accessibleLabel="Copy IPv6 address" />
+          <CopyButton
+            value={ipv6}
+            label="Copy IPv6"
+            accessibleLabel="Copy IPv6 address"
+            variant="outline"
+          />
         </div>
         <span ref={annotationRef} className="copy-annotation" aria-hidden="true">
           <SketchCircle>not stored</SketchCircle>

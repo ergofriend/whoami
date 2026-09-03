@@ -43,6 +43,19 @@ describe("CopyButton", () => {
     expect(button).toHaveClass("drawably-button--solid");
   });
 
+  it("uses the requested outline appearance while defaulting to solid", () => {
+    const { rerender } = render(<CopyButton value="2001:db8::42" label="Copy IPv6" />);
+    const button = screen.getByRole("button", { name: "Copy IPv6" });
+
+    expect(button).toHaveClass("drawably-button--solid");
+    expect(button).not.toHaveClass("drawably-button--outline");
+
+    rerender(<CopyButton value="2001:db8::42" label="Copy IPv6" variant="outline" />);
+
+    expect(button).toHaveClass("drawably-button--outline");
+    expect(button).not.toHaveClass("drawably-button--solid");
+  });
+
   it("stays visible and disabled when no value is available", () => {
     const writeText = vi.fn();
     Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });

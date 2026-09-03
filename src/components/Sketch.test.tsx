@@ -217,6 +217,68 @@ describe("Sketch", () => {
     for (const sketch of sketches) expect(sketch.destroy).toHaveBeenCalledOnce();
   });
 
+  it("reattaches interactive sketches when reduced-motion preference changes", async () => {
+    let reducedMotion = false;
+    const changeListeners = new Set<() => void>();
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = vi.fn(
+      (query: string) =>
+        ({
+          matches: query === "(prefers-reduced-motion: reduce)" && reducedMotion,
+          media: query,
+          onchange: null,
+          addListener: (listener: () => void) => changeListeners.add(listener),
+          removeListener: (listener: () => void) => changeListeners.delete(listener),
+          addEventListener: (_type: string, listener: () => void) => changeListeners.add(listener),
+          removeEventListener: (_type: string, listener: () => void) =>
+            changeListeners.delete(listener),
+          dispatchEvent: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
+
+    try {
+      const rendered = render(
+        <>
+          <SketchButton>Copy</SketchButton>
+          <SketchUnderline>Heading</SketchUnderline>
+          <SketchCircle>not stored</SketchCircle>
+        </>,
+      );
+      const initialSketches = [
+        drawably.drawablyButton.mock.results[0]?.value,
+        drawably.drawablyUnderline.mock.results[0]?.value,
+        drawably.drawablyCircle.mock.results[0]?.value,
+      ];
+
+      expect(initialSketches.every(Boolean)).toBe(true);
+      expect(changeListeners).toHaveLength(3);
+
+      await act(async () => {
+        reducedMotion = true;
+        for (const listener of changeListeners) listener();
+      });
+
+      for (const sketch of initialSketches) expect(sketch?.destroy).toHaveBeenCalledOnce();
+      expect(drawably.drawablyButton).toHaveBeenCalledTimes(2);
+      expect(drawably.drawablyUnderline).toHaveBeenCalledTimes(2);
+      expect(drawably.drawablyCircle).toHaveBeenCalledTimes(2);
+
+      const replacementSketches = [
+        drawably.drawablyButton.mock.results[1]?.value,
+        drawably.drawablyUnderline.mock.results[1]?.value,
+        drawably.drawablyCircle.mock.results[1]?.value,
+      ];
+      expect(replacementSketches.every(Boolean)).toBe(true);
+
+      rendered.unmount();
+
+      for (const sketch of replacementSketches) expect(sketch?.destroy).toHaveBeenCalledOnce();
+      expect(changeListeners).toHaveLength(0);
+    } finally {
+      window.matchMedia = originalMatchMedia;
+    }
+  });
+
   it("passes a static arrow sketch when reduced motion is requested", () => {
     const originalMatchMedia = window.matchMedia;
     window.matchMedia = vi.fn(
