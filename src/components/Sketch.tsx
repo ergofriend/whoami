@@ -5,13 +5,19 @@ import {
   useRef,
   type AnchorHTMLAttributes,
   type ButtonHTMLAttributes,
+  type HTMLAttributes,
   type ReactNode,
+  type RefObject,
 } from "react";
 import {
+  drawablyArrow,
   drawablyBadge,
   drawablyButton,
   drawablyCard,
+  drawablyCircle,
+  drawablyDivider,
   drawablyHighlight,
+  drawablyList,
   drawablyUnderline,
 } from "drawably";
 
@@ -26,7 +32,9 @@ function classNames(...names: Array<string | undefined>): string {
   return names.filter(Boolean).join(" ");
 }
 
-export function SketchCard({ children }: { children: ReactNode }) {
+type SketchCardProps = HTMLAttributes<HTMLDivElement>;
+
+export function SketchCard({ children, className, ...props }: SketchCardProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,7 +44,7 @@ export function SketchCard({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div ref={ref} className={classNames("information-card", sketchClasses.card)}>
+    <div ref={ref} className={classNames(sketchClasses.card, className)} {...props}>
       {children}
     </div>
   );
@@ -79,6 +87,115 @@ export function SketchHighlight({ children }: { children: ReactNode }) {
       {children}
     </span>
   );
+}
+
+type SketchBadgeProps = HTMLAttributes<HTMLSpanElement> & {
+  variant?: "outline" | "scribble";
+};
+
+export function SketchBadge({
+  children,
+  className,
+  variant = "outline",
+  ...props
+}: SketchBadgeProps) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (ref.current === null) return;
+    const sketch = drawablyBadge(ref.current, { variant, roughness: 0.9, boil: 0 });
+    return () => sketch.destroy();
+  }, [variant]);
+
+  return (
+    <span
+      ref={ref}
+      className={classNames(
+        "drawably-host",
+        "drawably-badge",
+        `drawably-badge--${variant}`,
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+}
+
+export function SketchDivider({ className, ...props }: HTMLAttributes<HTMLHRElement>) {
+  const ref = useRef<HTMLHRElement>(null);
+
+  useEffect(() => {
+    if (ref.current === null) return;
+    const sketch = drawablyDivider(ref.current, { roughness: 0.8, boil: 0.15 });
+    return () => sketch.destroy();
+  }, []);
+
+  return (
+    <hr
+      ref={ref}
+      className={classNames("drawably-host", "drawably-divider", className)}
+      {...props}
+    />
+  );
+}
+
+type SketchListProps = HTMLAttributes<HTMLUListElement> & { marker?: "dash" | "check" };
+
+export function SketchList({ children, className, marker = "dash", ...props }: SketchListProps) {
+  const ref = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    if (ref.current === null) return;
+    const sketch = drawablyList(ref.current, { marker, roughness: 0.8, boil: 0.1 });
+    return () => sketch.destroy();
+  }, [marker]);
+
+  return (
+    <ul ref={ref} className={classNames("drawably-host", "drawably-list", className)} {...props}>
+      {children}
+    </ul>
+  );
+}
+
+export function SketchCircle({ children, className, ...props }: HTMLAttributes<HTMLSpanElement>) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (ref.current === null) return;
+    const sketch = drawablyCircle(ref.current, { roughness: 0.9, boil: 0.15, width: 1.5 });
+    return () => sketch.destroy();
+  }, []);
+
+  return (
+    <span
+      ref={ref}
+      className={classNames("drawably-host", "drawably-circle", className)}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+}
+
+type SketchArrowProps = {
+  from: RefObject<HTMLElement | null>;
+  to: RefObject<HTMLElement | null>;
+};
+
+export function SketchArrow({ from, to }: SketchArrowProps) {
+  useEffect(() => {
+    if (from.current === null || to.current === null) return;
+    const sketch = drawablyArrow(from.current, to.current, {
+      roughness: 0.8,
+      boil: 0.1,
+      width: 1.5,
+    });
+    return () => sketch.destroy();
+  }, [from, to]);
+
+  return null;
 }
 
 type SketchButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
