@@ -3,11 +3,6 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("./Sketch", async (importOriginal) => {
-  const original = await importOriginal<typeof import("./Sketch")>();
-  return { ...original, SketchArrow: () => null };
-});
-
 import { PublicAddressPanel } from "./PublicAddressPanel";
 
 describe("PublicAddressPanel", () => {
@@ -24,8 +19,12 @@ describe("PublicAddressPanel", () => {
     expect(within(panel).getByRole("button", { name: "Copy IPv6 address" })).toHaveClass(
       "drawably-button--outline",
     );
-    expect(within(panel).getByText("private by design")).toHaveClass("drawably-badge--outline");
-    expect(within(panel).getByText("not stored")).toBeInTheDocument();
+    const privacyBadge = within(panel).getByText("private by design");
+    expect(privacyBadge).toHaveClass("drawably-badge--outline");
+    expect(privacyBadge.querySelector(".privacy-sparkle")).toBeInTheDocument();
+    expect(privacyBadge.parentElement).toHaveClass("address-card-meta");
+    expect(within(panel).queryByText("not stored")).not.toBeInTheDocument();
+    expect(panel.querySelector(".drawably-arrow")).not.toBeInTheDocument();
   });
 
   it("keeps unavailable address slots stable and disables their controls", () => {

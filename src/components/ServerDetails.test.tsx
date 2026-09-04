@@ -70,7 +70,7 @@ describe("ServerDetails", () => {
             items={[{ label: "User agent", value: "Not supported" }]}
           />
         }
-        extendedBrowserDetails={
+        deviceDetails={
           <KeyValueSection
             title="Device and screen"
             items={[{ label: "Screen", value: "1 × 1" }]}
@@ -86,7 +86,18 @@ describe("ServerDetails", () => {
     const connectionOverview = screen.getByRole("region", {
       name: "Connection summary",
     });
-    const networkSection = within(connectionOverview).getByRole("region", { name: "Network" });
+    expect(
+      within(connectionOverview).queryByRole("region", { name: "Network" }),
+    ).not.toBeInTheDocument();
+    const networkSection = screen.getByRole("region", { name: "Network" });
+    const networkHeading = within(networkSection).getByRole("heading", {
+      name: "Network",
+      level: 2,
+    });
+    expect(networkHeading).toHaveClass("sketch-heading", "network-heading");
+    expect(networkHeading.querySelector(".drawably-underline")).not.toBeInTheDocument();
+    expect(networkHeading.querySelector(".doodle-icon--globe")).toBeInTheDocument();
+    expect(networkHeading.lastElementChild).toHaveClass("doodle-icon--globe");
     expect(
       Array.from(networkSection.querySelectorAll("dt")).map((term) => term.textContent),
     ).toEqual(["ASN", "Organization"]);
@@ -94,6 +105,7 @@ describe("ServerDetails", () => {
     const summaryLayout = document.querySelector(".summary-layout");
     expect(summaryLayout).not.toBeNull();
     expect(Array.from(summaryLayout?.children ?? []).map((child) => child.className)).toEqual([
+      "network-summary",
       "key-value-section location-summary",
       "browser-summary",
     ]);
@@ -103,23 +115,31 @@ describe("ServerDetails", () => {
     expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
       "Public IP addresses",
       "Network",
-      "Approximate location",
+      "Approximate Location",
       "Browser",
       "Connection",
+      "Device and screen",
       "TLS",
       "Cloudflare",
-      "Device and screen",
       "Request headers",
     ]);
 
+    const cloudflareSection = screen
+      .getByRole("heading", { name: "Cloudflare", level: 2 })
+      .closest("section");
+    expect(cloudflareSection?.querySelector(".site-route-illustration")).not.toBeInTheDocument();
+    expect(document.querySelector(".site-route-illustration")).not.toBeInTheDocument();
+
     const locationHeading = screen.getByRole("heading", {
-      name: "Approximate location",
+      name: "Approximate Location",
       level: 2,
     });
     const locationSection = locationHeading.closest("section");
     if (!locationSection) {
-      throw new Error("Approximate location section was not rendered");
+      throw new Error("Approximate Location section was not rendered");
     }
+    expect(locationHeading.querySelector(".doodle-icon--location")).toBeInTheDocument();
+    expect(locationHeading.lastElementChild).toHaveClass("doodle-icon--location");
     expect(
       within(locationSection).getByText(
         "Approximate location derived from your public IP address.",

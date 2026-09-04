@@ -36,7 +36,8 @@ export function HomeView({ inspection }: HomeViewProps) {
         <ServerDetails
           inspection={inspection}
           browserDetails={<BrowserDetails groups={["browser"]} />}
-          extendedBrowserDetails={<BrowserDetails groups={["device", "preferences"]} />}
+          deviceDetails={<BrowserDetails groups={["device"]} headingVariant="technical" />}
+          preferenceDetails={<BrowserDetails groups={["preferences"]} headingVariant="technical" />}
         />
         <SketchList className="trust-assurances" marker="check" aria-label="Privacy assurances">
           <li>No storage</li>

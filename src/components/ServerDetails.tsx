@@ -1,20 +1,23 @@
 import type { ReactNode } from "react";
 
 import type { ServerInspection } from "../features/server/server-inspection";
+import { DoodleIcon } from "./DoodleIcon";
 import { KeyValueSection } from "./KeyValueSection";
 import { PublicAddressPanel } from "./PublicAddressPanel";
-import { SketchBadge, SketchDivider, SketchUnderline } from "./Sketch";
+import { SketchBadge, SketchUnderline } from "./Sketch";
 
 type ServerDetailsProps = {
   inspection: ServerInspection;
   browserDetails: ReactNode;
-  extendedBrowserDetails?: ReactNode;
+  deviceDetails?: ReactNode;
+  preferenceDetails?: ReactNode;
 };
 
 export function ServerDetails({
   inspection,
   browserDetails,
-  extendedBrowserDetails,
+  deviceDetails,
+  preferenceDetails,
 }: ServerDetailsProps) {
   const requestHeaderItems = Object.entries(inspection.headers).map(([label, value]) => ({
     label,
@@ -29,19 +32,28 @@ export function ServerDetails({
           ipv6={inspection.publicIp.ipv6}
           pseudoIpv4={inspection.publicIp.pseudoIpv4}
         />
-        <KeyValueSection
-          className="network-summary"
-          title="Network"
-          items={[
-            { label: "ASN", value: inspection.network.asn },
-            { label: "Organization", value: inspection.network.organization },
-          ]}
-        />
       </section>
       <div className="summary-layout">
+        <section className="network-summary" aria-labelledby="network-heading">
+          <h2 id="network-heading" className="sketch-heading network-heading">
+            Network
+            <DoodleIcon kind="globe" />
+          </h2>
+          <dl>
+            <div>
+              <dt>ASN</dt>
+              <dd>{inspection.network.asn ?? "Not available"}</dd>
+            </div>
+            <div>
+              <dt>Organization</dt>
+              <dd>{inspection.network.organization ?? "Not available"}</dd>
+            </div>
+          </dl>
+        </section>
         <KeyValueSection
           className="location-summary"
-          title="Approximate location"
+          icon="location"
+          title="Approximate Location"
           description="Approximate location derived from your public IP address."
           items={[
             { label: "Continent", value: inspection.location.continent },
@@ -63,40 +75,56 @@ export function ServerDetails({
         <div className="browser-summary">{browserDetails}</div>
       </div>
 
-      <SketchDivider className="details-divider" />
       <details className="more-details">
         <summary className="sketch-heading">
           <SketchUnderline>More technical details</SketchUnderline>
         </summary>
         <div className="details-stack">
-          <KeyValueSection
-            title="Connection"
-            items={[
-              { label: "HTTP protocol", value: inspection.connection.httpProtocol },
-              { label: "Request priority", value: inspection.connection.requestPriority },
-              { label: "Accepted encodings", value: inspection.connection.clientAcceptEncoding },
-              { label: "TCP RTT (ms)", value: inspection.connection.tcpRttMs },
-              { label: "QUIC RTT (ms)", value: inspection.connection.quicRttMs },
-            ]}
-          />
+          <div className="details-column details-column--server">
+            <KeyValueSection
+              headingVariant="technical"
+              title="Connection"
+              items={[
+                { label: "HTTP protocol", value: inspection.connection.httpProtocol },
+                { label: "Request priority", value: inspection.connection.requestPriority },
+                {
+                  label: "Accepted encodings",
+                  value: inspection.connection.clientAcceptEncoding,
+                },
+                { label: "TCP RTT (ms)", value: inspection.connection.tcpRttMs },
+                { label: "QUIC RTT (ms)", value: inspection.connection.quicRttMs },
+              ]}
+            />
+
+            {deviceDetails}
+          </div>
+
+          <div className="details-column details-column--client">
+            <KeyValueSection
+              headingVariant="technical"
+              title="TLS"
+              items={[
+                { label: "Version", value: inspection.tls.version },
+                { label: "Cipher", value: inspection.tls.cipher },
+                { label: "ClientHello length", value: inspection.tls.clientHelloLength },
+              ]}
+            />
+
+            <KeyValueSection
+              headingVariant="technical"
+              title="Cloudflare"
+              items={[{ label: "Data center", value: inspection.cloudflare.colo }]}
+            />
+
+            {preferenceDetails}
+          </div>
 
           <KeyValueSection
-            title="TLS"
-            items={[
-              { label: "Version", value: inspection.tls.version },
-              { label: "Cipher", value: inspection.tls.cipher },
-              { label: "ClientHello length", value: inspection.tls.clientHelloLength },
-            ]}
+            className="request-headers-section"
+            headingVariant="technical"
+            title="Request headers"
+            items={requestHeaderItems}
           />
-
-          <KeyValueSection
-            title="Cloudflare"
-            items={[{ label: "Data center", value: inspection.cloudflare.colo }]}
-          />
-
-          {extendedBrowserDetails}
-
-          <KeyValueSection title="Request headers" items={requestHeaderItems} />
         </div>
       </details>
     </>

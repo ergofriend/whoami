@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { DoodleIcon, type DoodleIconKind } from "./DoodleIcon";
 import { SketchUnderline } from "./Sketch";
 
 export type KeyValueItem = {
@@ -14,6 +15,8 @@ type KeyValueSectionProps = {
   items: KeyValueItem[];
   children?: ReactNode;
   className?: string;
+  headingVariant?: "display" | "technical";
+  icon?: DoodleIconKind | undefined;
 };
 
 export function KeyValueSection({
@@ -22,14 +25,30 @@ export function KeyValueSection({
   items,
   children,
   className,
+  headingVariant = "display",
+  icon,
 }: KeyValueSectionProps) {
   const headingId = title.toLowerCase().replace(/\s+/g, "-");
-  const classes = ["key-value-section", className].filter(Boolean).join(" ");
+  const classes = [
+    "key-value-section",
+    headingVariant === "technical" ? "key-value-section--technical" : undefined,
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <section className={classes} aria-labelledby={headingId}>
-      <h2 id={headingId} className="sketch-heading">
-        <SketchUnderline>{title}</SketchUnderline>
+      <h2
+        id={headingId}
+        className={
+          headingVariant === "technical"
+            ? "sketch-heading technical-section-heading"
+            : `sketch-heading${icon ? " section-heading-with-doodle" : ""}`
+        }
+      >
+        {headingVariant === "technical" ? title : <SketchUnderline>{title}</SketchUnderline>}
+        {icon ? <DoodleIcon kind={icon} /> : null}
       </h2>
       {description !== undefined ? <p className="section-description">{description}</p> : null}
       <dl>

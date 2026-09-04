@@ -23,4 +23,20 @@ describe("KeyValueSection", () => {
       "A very long example organization",
     );
   });
+
+  it("uses a compact marker heading without an underline for technical groups", () => {
+    render(
+      <KeyValueSection
+        headingVariant="technical"
+        title="Connection"
+        items={[{ label: "HTTP protocol", value: "HTTP/3" }]}
+      />,
+    );
+
+    const heading = screen.getByRole("heading", { name: "Connection", level: 2 });
+    const section = screen.getByRole("region", { name: "Connection" });
+    expect(heading).toHaveClass("technical-section-heading");
+    expect(heading.querySelector(".drawably-underline")).not.toBeInTheDocument();
+    expect(section).toHaveClass("key-value-section--technical");
+  });
 });

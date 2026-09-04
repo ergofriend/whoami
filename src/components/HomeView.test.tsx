@@ -71,7 +71,7 @@ describe("HomeView", () => {
         .getAllByRole("heading")
         .filter((heading) => heading.closest("details") === null)
         .map((heading) => heading.textContent),
-    ).toEqual(["whoami", "Public IP addresses", "Network", "Approximate location", "Browser"]);
+    ).toEqual(["whoami", "Public IP addresses", "Network", "Approximate Location", "Browser"]);
 
     const banner = screen.getByRole("banner");
     expect(banner).toBeInTheDocument();
@@ -83,7 +83,10 @@ describe("HomeView", () => {
     await waitFor(() => expect(document.querySelectorAll(".drawably-card")).toHaveLength(1));
     for (const heading of screen
       .getAllByRole("heading")
-      .filter((heading) => !heading.classList.contains("visually-hidden"))) {
+      .filter(
+        (heading) =>
+          !heading.classList.contains("visually-hidden") && heading.textContent !== "Network",
+      )) {
       expect(heading).toHaveClass("sketch-heading");
     }
 
@@ -99,26 +102,155 @@ describe("HomeView", () => {
       screen.getByText("Approximate location derived from your public IP address."),
     ).toBeInTheDocument();
     expect(screen.getAllByText("Not available").length).toBeGreaterThan(0);
+    expect(
+      screen
+        .getByRole("heading", { name: "Browser", level: 2 })
+        .querySelector(".doodle-icon--browser"),
+    ).toBeInTheDocument();
+  });
+
+  it("uses one vertical rhythm for related groups and major sections", () => {
+    render(<HomeView inspection={emptyInspection} />);
+
+    const rootStyle = getComputedStyle(document.documentElement);
+    expect(rootStyle.getPropertyValue("--space-group").trim()).not.toBe("");
+    expect(rootStyle.getPropertyValue("--space-section").trim()).not.toBe("");
+
+    const network = screen.getByRole("region", { name: "Network" });
+    expect(getComputedStyle(network).position).toBe("relative");
+    expect(getComputedStyle(network).top).toBe("-0.25rem");
+    expect(getComputedStyle(network).gridColumn).toBe("2");
+    expect(getComputedStyle(network).gridRow).toBe("1");
+    expect(getComputedStyle(network).justifySelf).toBe("center");
+    const networkHeading = screen.getByRole("heading", { name: "Network", level: 2 });
+    const networkIcon = networkHeading.querySelector(".doodle-icon") as SVGElement;
+    expect(getComputedStyle(networkIcon).position).toBe("absolute");
+    expect(getComputedStyle(networkIcon).width).toBe("2.4rem");
+    expect(getComputedStyle(networkHeading).gap).toBe("0.2em");
+
+    const summaryLayout = document.querySelector<HTMLElement>(".summary-layout");
+    const moreDetails = document.querySelector<HTMLElement>(".more-details");
+    const trustAssurances = document.querySelector<HTMLElement>(".trust-assurances");
+    if (!summaryLayout || !moreDetails || !trustAssurances) {
+      throw new Error("Primary section spacing targets were not rendered");
+    }
+
+    expect(getComputedStyle(summaryLayout).gridTemplateColumns).toBe(
+      "minmax(0, 1.1fr) minmax(20rem, 0.9fr)",
+    );
+    const browserSummary = screen.getByText("Browser").closest(".browser-summary")!;
+    expect(getComputedStyle(browserSummary).gridRow).toBe("1");
+    expect(getComputedStyle(browserSummary).alignSelf).toBe("end");
+
+    expect([
+      getComputedStyle(screen.getByRole("banner")).marginBottom,
+      getComputedStyle(summaryLayout).marginTop,
+      getComputedStyle(moreDetails).marginTop,
+      getComputedStyle(trustAssurances).marginTop,
+      getComputedStyle(screen.getByRole("contentinfo")).marginTop,
+    ]).toEqual(Array(5).fill("var(--space-section)"));
+  });
+
+  it("keeps top-level text on one horizontal rail inside full-width surfaces", () => {
+    render(<HomeView inspection={emptyInspection} />);
+
+    const rootStyle = getComputedStyle(document.documentElement);
+    expect(rootStyle.getPropertyValue("--content-gutter").trim()).not.toBe("");
+    expect(rootStyle.getPropertyValue("--content-inset").trim()).not.toBe("");
+
+    const shell = document.querySelector<HTMLElement>(".site-shell");
+    const addressPanel = document.querySelector<HTMLElement>(".public-address-panel");
+    const connectionOverview = document.querySelector<HTMLElement>(".connection-overview");
+    const network = screen.getByRole("region", { name: "Network" });
+    const summaryLayout = document.querySelector<HTMLElement>(".summary-layout");
+    const location = screen
+      .getByRole("heading", { name: "Approximate Location" })
+      .closest<HTMLElement>("section");
+    const browser = document.querySelector<HTMLElement>(".browser-summary");
+    const detailsSummary = document.querySelector<HTMLElement>(".more-details > summary");
+    const detailsStack = document.querySelector<HTMLElement>(".details-stack");
+    const trustAssurances = document.querySelector<HTMLElement>(".trust-assurances");
+    if (
+      !shell ||
+      !addressPanel ||
+      !connectionOverview ||
+      !summaryLayout ||
+      !location ||
+      !browser ||
+      !detailsSummary ||
+      !detailsStack ||
+      !trustAssurances
+    ) {
+      throw new Error("Horizontal rail targets were not rendered");
+    }
+
+    expect(getComputedStyle(shell).paddingLeft).toBe("var(--content-gutter)");
+    expect(getComputedStyle(shell).paddingRight).toBe("var(--content-gutter)");
+    expect(getComputedStyle(summaryLayout).paddingLeft).toBe("var(--content-inset)");
+    expect(getComputedStyle(summaryLayout).paddingRight).toBe("var(--content-inset)");
+    expect(getComputedStyle(connectionOverview).paddingLeft).toBe("var(--content-inset)");
+    expect(getComputedStyle(connectionOverview).paddingRight).toBe("var(--content-inset)");
+    expect(getComputedStyle(location).paddingLeft).toBe("0px");
+    expect(getComputedStyle(browser).paddingLeft).toBe("0px");
+    expect(
+      getComputedStyle(document.querySelector<HTMLElement>(".more-details")!).paddingLeft,
+    ).toBe("var(--content-inset)");
+    expect(getComputedStyle(detailsSummary).marginLeft).toBe("0px");
+    expect(getComputedStyle(detailsStack).paddingLeft).toBe("0px");
+    expect(
+      [
+        screen.getByRole("banner"),
+        addressPanel,
+        network,
+        trustAssurances,
+        screen.getByRole("contentinfo"),
+      ].map((element) => getComputedStyle(element).paddingLeft),
+    ).toEqual(Array(5).fill("var(--content-inset)"));
   });
 
   it("reveals the remaining information sections from More technical details", async () => {
     render(<HomeView inspection={emptyInspection} />);
 
+    expect(screen.queryByRole("separator")).not.toBeInTheDocument();
+
     fireEvent.click(screen.getByText("More technical details"));
+
+    const detailsStack = document.querySelector<HTMLElement>(".details-stack");
+    const requestHeaders = screen
+      .getByRole("heading", { name: "Request headers" })
+      .closest("section");
+    expect(detailsStack).not.toBeNull();
+    expect(requestHeaders).not.toBeNull();
+    expect(getComputedStyle(detailsStack as HTMLElement).gridTemplateColumns).toBe(
+      "repeat(2, minmax(0, 1fr))",
+    );
+    expect(getComputedStyle(requestHeaders as HTMLElement).gridColumn).toBe("1 / -1");
 
     expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
       "whoami",
       "Public IP addresses",
       "Network",
-      "Approximate location",
+      "Approximate Location",
       "Browser",
       "Connection",
+      "Device and screen",
       "TLS",
       "Cloudflare",
-      "Device and screen",
       "Preferences and capabilities",
       "Request headers",
     ]);
+
+    const technicalHeadings = screen
+      .getAllByRole("heading", { level: 2 })
+      .filter((heading) => heading.closest(".details-stack") !== null);
+    expect(technicalHeadings).not.toHaveLength(0);
+    for (const heading of technicalHeadings) {
+      expect(heading).toHaveClass("technical-section-heading");
+      expect(heading.querySelector(".drawably-underline")).not.toBeInTheDocument();
+      const list = heading.closest("section")?.querySelector<HTMLElement>("dl");
+      expect(list).not.toBeNull();
+      expect(getComputedStyle(list as HTMLElement).marginLeft).toBe("var(--technical-indent)");
+    }
   });
 
   it("uses one address card and exposes concise trust assurances", async () => {
@@ -222,6 +354,11 @@ describe("HomeView", () => {
       "drawably-host",
       "drawably-badge",
       "drawably-badge--outline",
+    );
+    expect(getComputedStyle(sourceLink).whiteSpace).toBe("nowrap");
+    expect(getComputedStyle(sourceLink.parentElement as HTMLElement).position).toBe("absolute");
+    expect(getComputedStyle(sourceLink.parentElement as HTMLElement).transform).toBe(
+      "rotate(5deg)",
     );
     expect(
       sourceLink.querySelector("svg[viewBox='0 0 16 16'][aria-hidden='true']"),
