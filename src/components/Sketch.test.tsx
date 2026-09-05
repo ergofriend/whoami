@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { createRef } from "react";
+import { renderToString } from "react-dom/server";
 import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -8,7 +9,7 @@ const drawably = vi.hoisted(() => {
   const sketches: Array<{ destroy: ReturnType<typeof vi.fn> }> = [];
   const createAttach = () =>
     vi.fn(() => {
-      const sketch = { destroy: vi.fn() };
+      const sketch = { destroy: vi.fn(), setState: vi.fn() };
       sketches.push(sketch);
       return sketch;
     });
@@ -58,6 +59,9 @@ vi.mock("drawably", () => ({
   drawablyUnderline: drawably.drawablyUnderline,
 }));
 
+// Exercise the real drawably/react lifecycle while isolating SVG geometry.
+vi.mock("../../node_modules/drawably/dist/controls.js", () => ({ ...drawably }));
+
 import {
   SketchArrow,
   SketchBadge,
@@ -92,6 +96,29 @@ describe("Sketch", () => {
     cleanup();
     for (const attach of drawably.attachers) attach.mockClear();
     drawably.sketches.length = 0;
+  });
+
+  it("preserves semantic elements and sketch classes in server-rendered markup", () => {
+    const html = renderToString(
+      <>
+        <SketchButton variant="solid" disabled aria-label="Copy address">
+          Copy
+        </SketchButton>
+        <SketchBadgeLink href="https://example.com">Source</SketchBadgeLink>
+        <SketchUnderline>Heading</SketchUnderline>
+      </>,
+    );
+    const container = document.createElement("div");
+    container.innerHTML = html;
+    expect(container.querySelector("button")).toHaveClass(
+      "drawably-host",
+      "drawably-button--solid",
+    );
+    expect(container.querySelector("button")).toHaveAttribute("type", "button");
+    expect(container.querySelector("button")).toBeDisabled();
+    expect(container.querySelector("a")).toHaveAttribute("href", "https://example.com");
+    expect(container.querySelector(".drawably-underline")).toHaveTextContent("Heading");
+    for (const attach of drawably.attachers) expect(attach).not.toHaveBeenCalled();
   });
 
   it("renders real elements for every approved primitive", () => {
@@ -169,7 +196,7 @@ describe("Sketch", () => {
       roughness: 0.9,
       boil: 0,
     });
-    expect(drawably.drawablyButton).toHaveBeenCalledWith(button, { variant: "solid" });
+    expect(drawably.drawablyButton).toHaveBeenCalledWith(button, { variant: "solid", boil: 0.3 });
     expect(drawably.drawablyDivider).toHaveBeenCalledWith(divider, {
       roughness: 0.8,
       boil: 0.15,
@@ -250,6 +277,8 @@ describe("Sketch", () => {
         drawably.drawablyCircle.mock.results[0]?.value,
       ];
 
+      const button = rendered.getByRole("button");
+      button.focus();
       expect(initialSketches.every(Boolean)).toBe(true);
       expect(changeListeners).toHaveLength(3);
 
@@ -262,6 +291,8 @@ describe("Sketch", () => {
       expect(drawably.drawablyButton).toHaveBeenCalledTimes(2);
       expect(drawably.drawablyUnderline).toHaveBeenCalledTimes(2);
       expect(drawably.drawablyCircle).toHaveBeenCalledTimes(2);
+      expect(rendered.getByRole("button")).toBe(button);
+      expect(button).toHaveFocus();
 
       const replacementSketches = [
         drawably.drawablyButton.mock.results[1]?.value,

@@ -6,21 +6,22 @@ import {
   useSyncExternalStore,
   type AnchorHTMLAttributes,
   type ButtonHTMLAttributes,
+  type ComponentProps,
   type HTMLAttributes,
   type ReactNode,
-  type RefObject,
 } from "react";
+import { drawablyBadge } from "drawably";
 import {
-  drawablyArrow,
-  drawablyBadge,
-  drawablyButton,
-  drawablyCard,
-  drawablyCircle,
-  drawablyDivider,
-  drawablyHighlight,
-  drawablyList,
-  drawablyUnderline,
-} from "drawably";
+  DrawablyArrow,
+  DrawablyBadge,
+  DrawablyButton,
+  DrawablyCard,
+  DrawablyCircle,
+  DrawablyDivider,
+  DrawablyHighlight,
+  DrawablyList,
+  DrawablyUnderline,
+} from "drawably/react";
 
 const sketchClasses = {
   card: "drawably-host drawably-card",
@@ -62,67 +63,43 @@ function classNames(...names: Array<string | undefined>): string {
   return names.filter(Boolean).join(" ");
 }
 
-type SketchCardProps = HTMLAttributes<HTMLDivElement>;
-
-export function SketchCard({ children, className, ...props }: SketchCardProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (ref.current === null) return;
-    const sketch = drawablyCard(ref.current, { roughness: 0.9, boil: 0.2 });
-    return () => sketch.destroy();
-  }, []);
-
+export function SketchCard({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div ref={ref} className={classNames(sketchClasses.card, className)} {...props}>
+    <DrawablyCard
+      roughness={0.9}
+      boil={0.2}
+      className={classNames(sketchClasses.card, className)}
+      {...props}
+    >
       {children}
-    </div>
+    </DrawablyCard>
   );
 }
 
 export function SketchUnderline({ children }: { children: ReactNode }) {
-  const ref = useRef<HTMLSpanElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
-
-  useEffect(() => {
-    if (ref.current === null) return;
-    const sketch = drawablyUnderline(ref.current, {
-      roughness: 0.9,
-      boil: 0.2,
-      width: 1.5,
-    });
-    return () => sketch.destroy();
-  }, [prefersReducedMotion]);
-
   return (
-    <span ref={ref} className={sketchClasses.underline}>
+    <DrawablyUnderline
+      roughness={0.9}
+      boil={prefersReducedMotion ? 0 : 0.2}
+      width={1.5}
+      className={sketchClasses.underline}
+    >
       {children}
-    </span>
+    </DrawablyUnderline>
   );
 }
 
 export function SketchHighlight({ children }: { children: ReactNode }) {
-  const ref = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    if (ref.current === null) return;
-    const sketch = drawablyHighlight(ref.current, {
-      roughness: 0.8,
-      boil: 0.15,
-    });
-    return () => sketch.destroy();
-  }, []);
-
   return (
-    <span ref={ref} className={sketchClasses.highlight}>
+    <DrawablyHighlight roughness={0.8} boil={0.15} className={sketchClasses.highlight}>
       {children}
-    </span>
+    </DrawablyHighlight>
   );
 }
 
-type SketchBadgeProps = HTMLAttributes<HTMLSpanElement> & {
-  variant?: "outline" | "scribble";
-};
+type SketchBadgeProps = HTMLAttributes<HTMLSpanElement> &
+  Pick<ComponentProps<typeof DrawablyBadge>, "variant">;
 
 export function SketchBadge({
   children,
@@ -130,17 +107,11 @@ export function SketchBadge({
   variant = "outline",
   ...props
 }: SketchBadgeProps) {
-  const ref = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    if (ref.current === null) return;
-    const sketch = drawablyBadge(ref.current, { variant, roughness: 0.9, boil: 0 });
-    return () => sketch.destroy();
-  }, [variant]);
-
   return (
-    <span
-      ref={ref}
+    <DrawablyBadge
+      variant={variant}
+      roughness={0.9}
+      boil={0}
       className={classNames(
         "drawably-host",
         "drawably-badge",
@@ -150,91 +121,70 @@ export function SketchBadge({
       {...props}
     >
       {children}
-    </span>
+    </DrawablyBadge>
   );
 }
 
 export function SketchDivider({ className, ...props }: HTMLAttributes<HTMLHRElement>) {
-  const ref = useRef<HTMLHRElement>(null);
-
-  useEffect(() => {
-    if (ref.current === null) return;
-    const sketch = drawablyDivider(ref.current, { roughness: 0.8, boil: 0.15 });
-    return () => sketch.destroy();
-  }, []);
-
   return (
-    <hr
-      ref={ref}
+    <DrawablyDivider
+      roughness={0.8}
+      boil={0.15}
       className={classNames("drawably-host", "drawably-divider", className)}
       {...props}
     />
   );
 }
 
-type SketchListProps = HTMLAttributes<HTMLUListElement> & { marker?: "dash" | "check" };
+type SketchListProps = HTMLAttributes<HTMLUListElement> &
+  Pick<ComponentProps<typeof DrawablyList>, "marker">;
 
 export function SketchList({ children, className, marker = "dash", ...props }: SketchListProps) {
-  const ref = useRef<HTMLUListElement>(null);
-
-  useEffect(() => {
-    if (ref.current === null) return;
-    const sketch = drawablyList(ref.current, { marker, roughness: 0.8, boil: 0.1 });
-    return () => sketch.destroy();
-  }, [marker]);
-
   return (
-    <ul ref={ref} className={classNames("drawably-host", "drawably-list", className)} {...props}>
+    <DrawablyList
+      marker={marker}
+      roughness={0.8}
+      boil={0.1}
+      className={classNames("drawably-host", "drawably-list", className)}
+      {...props}
+    >
       {children}
-    </ul>
+    </DrawablyList>
   );
 }
 
 export function SketchCircle({ children, className, ...props }: HTMLAttributes<HTMLSpanElement>) {
-  const ref = useRef<HTMLSpanElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
-
-  useEffect(() => {
-    if (ref.current === null) return;
-    const sketch = drawablyCircle(ref.current, { roughness: 0.9, boil: 0.15, width: 1.5 });
-    return () => sketch.destroy();
-  }, [prefersReducedMotion]);
-
   return (
-    <span
-      ref={ref}
+    <DrawablyCircle
+      roughness={0.9}
+      boil={prefersReducedMotion ? 0 : 0.15}
+      width={1.5}
       className={classNames("drawably-host", "drawably-circle", className)}
       {...props}
     >
       {children}
-    </span>
+    </DrawablyCircle>
   );
 }
 
-type SketchArrowProps = {
-  from: RefObject<HTMLElement | null>;
-  to: RefObject<HTMLElement | null>;
-};
+type SketchArrowProps = Pick<ComponentProps<typeof DrawablyArrow>, "from" | "to">;
 
 export function SketchArrow({ from, to }: SketchArrowProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
-
-  useEffect(() => {
-    if (from.current === null || to.current === null) return;
-    const sketch = drawablyArrow(from.current, to.current, {
-      roughness: 0.8,
-      boil: prefersReducedMotion ? 0 : 0.1,
-      width: 1.5,
-    });
-    return () => sketch.destroy();
-  }, [from, to, prefersReducedMotion]);
-
-  return null;
+  return (
+    <DrawablyArrow
+      from={from}
+      to={to}
+      roughness={0.8}
+      boil={prefersReducedMotion ? 0 : 0.1}
+      width={1.5}
+    />
+  );
 }
 
-type SketchButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "outline" | "solid";
-};
+type SketchButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
+  Pick<ComponentProps<typeof DrawablyButton>, "variant">;
 
 export function SketchButton({
   children,
@@ -242,19 +192,11 @@ export function SketchButton({
   variant = "outline",
   ...props
 }: SketchButtonProps) {
-  const ref = useRef<HTMLButtonElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
-
-  useEffect(() => {
-    if (ref.current === null) return;
-    const sketch = drawablyButton(ref.current, { variant });
-    return () => sketch.destroy();
-  }, [variant, prefersReducedMotion]);
-
   return (
-    <button
-      ref={ref}
-      type="button"
+    <DrawablyButton
+      variant={variant}
+      boil={prefersReducedMotion ? 0 : 0.3}
       className={classNames(
         "drawably-host",
         "drawably-button",
@@ -264,7 +206,7 @@ export function SketchButton({
       {...props}
     >
       {children}
-    </button>
+    </DrawablyButton>
   );
 }
 

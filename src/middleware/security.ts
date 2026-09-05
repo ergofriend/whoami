@@ -17,15 +17,9 @@ const dynamicResponsePolicy: MiddlewareHandler = async (c, next) => {
   await next();
   if (!isPageRequest) return;
 
-  const headers = new Headers(c.res.headers);
-  headers.set("Cache-Control", "no-store");
-  headers.set("X-Content-Type-Options", "nosniff");
-  headers.set("Referrer-Policy", "no-referrer");
-  c.res = new Response(c.res.body, {
-    status: c.res.status,
-    statusText: c.res.statusText,
-    headers,
-  });
+  c.header("Cache-Control", "no-store");
+  c.header("X-Content-Type-Options", "nosniff");
+  c.header("Referrer-Policy", "no-referrer");
 };
 
 const securityMiddleware = (): MiddlewareHandler =>

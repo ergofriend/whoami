@@ -1,118 +1,9 @@
+import { createBrowserSource } from "./browser-source";
+
+export { createBrowserSource } from "./browser-source";
+export type { BrowserInspection, BrowserSource } from "./types";
+
 type Nullable<T> = T | null;
-
-export type BrowserInspection = {
-  browser: {
-    userAgent: Nullable<string>;
-    languages: Nullable<string[]>;
-    timezone: Nullable<string>;
-    utcOffsetMinutes: Nullable<number>;
-    cookiesEnabled: Nullable<boolean>;
-    doNotTrack: Nullable<string>;
-    platform: Nullable<string>;
-  };
-  device: {
-    screen: Nullable<string>;
-    availableScreen: Nullable<string>;
-    viewport: Nullable<string>;
-    devicePixelRatio: Nullable<number>;
-    colorDepth: Nullable<number>;
-    pixelDepth: Nullable<number>;
-    maxTouchPoints: Nullable<number>;
-    logicalProcessors: Nullable<number>;
-    deviceMemoryGiB: Nullable<number>;
-  };
-  preferences: {
-    colorScheme: Nullable<"light" | "dark">;
-    reducedMotion: Nullable<boolean>;
-    contrast: Nullable<"more" | "less">;
-    online: Nullable<boolean>;
-    effectiveConnectionType: Nullable<string>;
-    downlinkMbps: Nullable<number>;
-    rttMs: Nullable<number>;
-    saveData: Nullable<boolean>;
-  };
-};
-
-export type BrowserSource = {
-  userAgent: () => string;
-  languages: () => string[];
-  timezone: () => Nullable<string>;
-  utcOffsetMinutes: () => number;
-  cookiesEnabled: () => boolean;
-  doNotTrack: () => Nullable<string>;
-  platform: () => Nullable<string>;
-  screenWidth: () => Nullable<number>;
-  screenHeight: () => Nullable<number>;
-  availableScreenWidth: () => Nullable<number>;
-  availableScreenHeight: () => Nullable<number>;
-  viewportWidth: () => Nullable<number>;
-  viewportHeight: () => Nullable<number>;
-  devicePixelRatio: () => number;
-  colorDepth: () => number;
-  pixelDepth: () => number;
-  maxTouchPoints: () => number;
-  logicalProcessors: () => Nullable<number>;
-  deviceMemoryGiB: () => Nullable<number>;
-  colorScheme: () => Nullable<"light" | "dark">;
-  reducedMotion: () => Nullable<boolean>;
-  contrast: () => Nullable<"more" | "less">;
-  online: () => boolean;
-  effectiveConnectionType: () => Nullable<string>;
-  downlinkMbps: () => Nullable<number>;
-  rttMs: () => Nullable<number>;
-  saveData: () => Nullable<boolean>;
-};
-
-type NavigatorExtensions = Navigator & {
-  deviceMemory?: number;
-  connection?: {
-    effectiveType?: string;
-    downlink?: number;
-    rtt?: number;
-    saveData?: boolean;
-  };
-};
-
-function readMediaQuery(query: string): boolean {
-  return window.matchMedia(query).matches;
-}
-
-export function createBrowserSource(): BrowserSource {
-  const browserNavigator = navigator as NavigatorExtensions;
-
-  return {
-    userAgent: () => browserNavigator.userAgent,
-    languages: () => [...browserNavigator.languages],
-    timezone: () => Intl.DateTimeFormat().resolvedOptions().timeZone ?? null,
-    utcOffsetMinutes: () => new Date().getTimezoneOffset(),
-    cookiesEnabled: () => browserNavigator.cookieEnabled,
-    doNotTrack: () => browserNavigator.doNotTrack ?? null,
-    platform: () => browserNavigator.platform ?? null,
-    screenWidth: () => window.screen.width,
-    screenHeight: () => window.screen.height,
-    availableScreenWidth: () => window.screen.availWidth,
-    availableScreenHeight: () => window.screen.availHeight,
-    viewportWidth: () => window.innerWidth,
-    viewportHeight: () => window.innerHeight,
-    devicePixelRatio: () => window.devicePixelRatio,
-    colorDepth: () => window.screen.colorDepth,
-    pixelDepth: () => window.screen.pixelDepth,
-    maxTouchPoints: () => browserNavigator.maxTouchPoints,
-    logicalProcessors: () => browserNavigator.hardwareConcurrency ?? null,
-    deviceMemoryGiB: () => browserNavigator.deviceMemory ?? null,
-    colorScheme: () => (readMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light"),
-    reducedMotion: () => readMediaQuery("(prefers-reduced-motion: reduce)"),
-    contrast: () => {
-      if (readMediaQuery("(prefers-contrast: more)")) return "more";
-      return readMediaQuery("(prefers-contrast: less)") ? "less" : null;
-    },
-    online: () => browserNavigator.onLine,
-    effectiveConnectionType: () => browserNavigator.connection?.effectiveType ?? null,
-    downlinkMbps: () => browserNavigator.connection?.downlink ?? null,
-    rttMs: () => browserNavigator.connection?.rtt ?? null,
-    saveData: () => browserNavigator.connection?.saveData ?? null,
-  };
-}
 
 type Guard<T> = (value: unknown) => value is T;
 
@@ -153,7 +44,7 @@ function formatSize(width: Nullable<number>, height: Nullable<number>): Nullable
   return typeof width === "number" && typeof height === "number" ? `${width} × ${height}` : null;
 }
 
-export function collectBrowserInspection(source = createBrowserSource()): BrowserInspection {
+export function collectBrowserInspection(source = createBrowserSource()) {
   return {
     browser: {
       userAgent: readSupported(source.userAgent, isNonEmptyString),

@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { renderToString } from "react-dom/server";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { BrowserDetails } from "./BrowserDetails";
-import type { BrowserInspection } from "../features/browser/browser-inspection";
+import type { BrowserInspection } from "../features/browser/types";
 
 const inspection: BrowserInspection = {
   browser: {
@@ -41,6 +42,35 @@ const inspection: BrowserInspection = {
 
 describe("BrowserDetails", () => {
   afterEach(cleanup);
+
+  it("renders placeholders on the server without collecting browser data", () => {
+    const collect = vi.fn(() => inspection);
+    const html = renderToString(<BrowserDetails collect={collect} />);
+
+    expect(collect).not.toHaveBeenCalled();
+    expect(html.match(/Not supported/g)).toHaveLength(24);
+    expect(html).not.toContain("Example Browser");
+  });
+
+  it("filters groups while preserving display order and technical headings", () => {
+    render(
+      <BrowserDetails
+        collect={() => inspection}
+        groups={["preferences", "device", "device"]}
+        headingVariant="technical"
+      />,
+    );
+
+    const headings = screen.getAllByRole("heading", { level: 2 });
+    expect(headings.map((heading) => heading.textContent)).toEqual([
+      "Device and screen",
+      "Preferences and capabilities",
+    ]);
+    for (const heading of headings) {
+      expect(heading).toHaveClass("technical-section-heading");
+    }
+    expect(screen.queryByText("Example Browser")).not.toBeInTheDocument();
+  });
 
   it("renders collected browser details in the documented section and row order", async () => {
     render(<BrowserDetails collect={() => inspection} />);

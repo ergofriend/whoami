@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { ServerInspection } from "../features/server/server-inspection";
+import type { ServerInspection } from "../features/server/types";
 import { DoodleIcon } from "./DoodleIcon";
 import { KeyValueSection } from "./KeyValueSection";
 import { PublicAddressPanel } from "./PublicAddressPanel";

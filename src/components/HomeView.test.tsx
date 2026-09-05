@@ -6,7 +6,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import { HomeView } from "./HomeView";
-import type { ServerInspection } from "../features/server/server-inspection";
+import type { ServerInspection } from "../features/server/types";
 
 let stylesheet: HTMLStyleElement;
 

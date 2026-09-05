@@ -1,4 +1,4 @@
-import type { ServerInspection } from "../features/server/server-inspection";
+import type { ServerInspection } from "../features/server/types";
 import { BrowserDetails } from "./BrowserDetails";
 import { ServerDetails } from "./ServerDetails";
 import { SketchBadgeLink, SketchHighlight, SketchList, SketchUnderline } from "./Sketch";

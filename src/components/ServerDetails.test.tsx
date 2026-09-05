@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { KeyValueSection } from "./KeyValueSection";
 import { ServerDetails } from "./ServerDetails";
-import type { ServerInspection } from "../features/server/server-inspection";
+import type { ServerInspection } from "../features/server/types";
 
 const inspection: ServerInspection = {
   publicIp: { ipv4: "203.0.113.42", ipv6: null, pseudoIpv4: null },
