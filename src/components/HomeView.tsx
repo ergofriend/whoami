@@ -39,18 +39,22 @@ export function HomeView({ inspection }: HomeViewProps) {
           deviceDetails={<BrowserDetails groups={["device"]} headingVariant="technical" />}
           preferenceDetails={<BrowserDetails groups={["preferences"]} headingVariant="technical" />}
         />
+      </main>
+      <footer className="site-footer">
         <SketchList className="trust-assurances" marker="check" aria-label="Privacy assurances">
           <li>No storage</li>
           <li>No GPS</li>
           <li>Browser data stays local</li>
         </SketchList>
-      </main>
-      <footer className="site-footer">
-        <p>This site does not store the information displayed above.</p>
-        <p>
-          Browser details are processed only in your browser and are not sent back to this site.
-        </p>
-        <p>Cloudflare Web Analytics is used for privacy-focused performance and visit analytics.</p>
+        <ul className="site-footer-notes">
+          <li>This site does not store the information displayed above.</li>
+          <li>
+            Browser details are processed only in your browser and are not sent back to this site.
+          </li>
+          <li>
+            Cloudflare Web Analytics is used for privacy-focused performance and visit analytics.
+          </li>
+        </ul>
       </footer>
     </div>
   );

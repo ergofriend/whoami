@@ -170,9 +170,11 @@ describe("ServerDetails", () => {
     );
 
     const addressPanel = screen.getByRole("region", { name: "Public IP addresses" });
-    expect(within(addressPanel).getByText("Your IPv6 address")).toBeInTheDocument();
-    expect(within(addressPanel).getByText("2001:db8::42")).toBeInTheDocument();
-    expect(within(addressPanel).getByText("Not available")).toBeInTheDocument();
+    expect(within(addressPanel).getByText("Your public IPv6 address")).toBeInTheDocument();
+    expect(within(addressPanel).getByText("2001:db8::42")).toHaveClass(
+      "public-address-value--primary",
+    );
+    expect(within(addressPanel).queryByText("Not available")).not.toBeInTheDocument();
   });
 
   it("shows Cloudflare pseudo IPv4 as a separate value", () => {
@@ -187,11 +189,11 @@ describe("ServerDetails", () => {
     );
 
     const addressPanel = screen.getByRole("region", { name: "Public IP addresses" });
-    expect(within(addressPanel).getByText("Pseudo IPv4")).toBeInTheDocument();
+    expect(within(addressPanel).getByText("Cloudflare Pseudo IPv4")).toBeInTheDocument();
     expect(within(addressPanel).getByText("240.16.0.1")).toBeInTheDocument();
     expect(within(addressPanel).getByRole("button", { name: "Copy pseudo IPv4" })).toBeEnabled();
 
     const networkSection = screen.getByRole("region", { name: "Network" });
-    expect(within(networkSection).queryByText("Pseudo IPv4")).not.toBeInTheDocument();
+    expect(within(networkSection).queryByText("Cloudflare Pseudo IPv4")).not.toBeInTheDocument();
   });
 });

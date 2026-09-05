@@ -96,7 +96,7 @@ describe("HomeView", () => {
     expect(disclosure).not.toHaveAttribute("open");
     expect(screen.getByRole("heading", { name: "Connection" })).not.toBeVisible();
     expect(screen.getByRole("button", { name: "Copy IPv4 address" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Copy IPv6 address" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Copy IPv6 address" })).not.toBeInTheDocument();
 
     expect(
       screen.getByText("Approximate location derived from your public IP address."),
@@ -118,7 +118,7 @@ describe("HomeView", () => {
 
     const network = screen.getByRole("region", { name: "Network" });
     expect(getComputedStyle(network).position).toBe("relative");
-    expect(getComputedStyle(network).top).toBe("-0.25rem");
+    expect(getComputedStyle(network).top).toBe("-0.75rem");
     expect(getComputedStyle(network).gridColumn).toBe("2");
     expect(getComputedStyle(network).gridRow).toBe("1");
     expect(getComputedStyle(network).justifySelf).toBe("center");
@@ -146,9 +146,10 @@ describe("HomeView", () => {
       getComputedStyle(screen.getByRole("banner")).marginBottom,
       getComputedStyle(summaryLayout).marginTop,
       getComputedStyle(moreDetails).marginTop,
-      getComputedStyle(trustAssurances).marginTop,
       getComputedStyle(screen.getByRole("contentinfo")).marginTop,
-    ]).toEqual(Array(5).fill("var(--space-section)"));
+    ]).toEqual(Array(4).fill("var(--space-section)"));
+    expect(getComputedStyle(trustAssurances).marginTop).toBe("0px");
+    expect(trustAssurances.closest("footer")).toBe(screen.getByRole("contentinfo"));
   });
 
   it("keeps top-level text on one horizontal rail inside full-width surfaces", () => {
@@ -198,14 +199,14 @@ describe("HomeView", () => {
     expect(getComputedStyle(detailsSummary).marginLeft).toBe("0px");
     expect(getComputedStyle(detailsStack).paddingLeft).toBe("0px");
     expect(
-      [
-        screen.getByRole("banner"),
-        addressPanel,
-        network,
-        trustAssurances,
-        screen.getByRole("contentinfo"),
-      ].map((element) => getComputedStyle(element).paddingLeft),
-    ).toEqual(Array(5).fill("var(--content-inset)"));
+      [screen.getByRole("banner"), network, screen.getByRole("contentinfo")].map(
+        (element) => getComputedStyle(element).paddingLeft,
+      ),
+    ).toEqual(Array(3).fill("var(--content-inset)"));
+    expect(getComputedStyle(addressPanel).getPropertyValue("padding-inline")).toBe(
+      "var(--content-inset)",
+    );
+    expect(getComputedStyle(trustAssurances).paddingLeft).toBe("0px");
   });
 
   it("reveals the remaining information sections from More technical details", async () => {
@@ -358,7 +359,7 @@ describe("HomeView", () => {
     expect(getComputedStyle(sourceLink).whiteSpace).toBe("nowrap");
     expect(getComputedStyle(sourceLink.parentElement as HTMLElement).position).toBe("absolute");
     expect(getComputedStyle(sourceLink.parentElement as HTMLElement).transform).toBe(
-      "rotate(5deg)",
+      "translateY(-50%) rotate(5deg)",
     );
     expect(
       sourceLink.querySelector("svg[viewBox='0 0 16 16'][aria-hidden='true']"),

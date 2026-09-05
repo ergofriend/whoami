@@ -16,7 +16,7 @@
   --content-inset: 1.5rem;
   --space-tight: clamp(0.75rem, 1.5vw, 1rem);
   --space-group: clamp(1.5rem, 3vw, 2rem);
-  --space-section: clamp(2.5rem, 4.5vw, 3.25rem);
+  --space-section: clamp(3rem, 5.5vw, 4rem);
   --technical-indent: 2rem;
 }
 
@@ -58,7 +58,7 @@ a:focus-visible,
 
 .site-shell {
   width: 100%;
-  max-width: 72rem;
+  max-width: 60rem;
   margin-inline: auto;
   padding-right: var(--content-gutter);
   padding-left: var(--content-gutter);
@@ -80,7 +80,7 @@ a:focus-visible,
   margin: 0;
   color: #5947a8;
   font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
-  font-size: clamp(4rem, 12vw, 6rem);
+  font-size: clamp(4rem, 15vw, 7.5rem);
   font-weight: 400;
   letter-spacing: -0.04em;
   line-height: 0.9;
@@ -88,7 +88,7 @@ a:focus-visible,
 }
 
 .site-intro {
-  max-width: 39rem;
+  max-width: 46rem;
   margin: 1.5rem 0 0;
   font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
   font-size: clamp(1.05rem, 2vw, 1.25rem);
@@ -103,10 +103,10 @@ a:focus-visible,
 
 .site-header-actions {
   position: absolute;
-  top: 0.5rem;
+  top: 40%;
   right: var(--content-inset);
   width: fit-content;
-  transform: rotate(5deg);
+  transform: translateY(-50%) rotate(5deg);
 }
 
 .repository-link.drawably-badge {
@@ -146,34 +146,77 @@ a:focus-visible,
 
 .public-address-panel {
   position: relative;
-  padding-block: var(--content-inset);
-  padding-right: var(--content-inset);
-  padding-left: var(--content-inset);
+  padding-block: clamp(2rem, 4vw, 2.5rem);
+  padding-inline: var(--content-inset);
   background: rgb(255 250 240 / 92%);
 }
 
 .public-address-panel > section {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(15rem, 0.8fr);
-  column-gap: clamp(1.5rem, 4vw, 3rem);
-  row-gap: 0.65rem;
-}
-
-.address-card-meta {
-  display: flex;
-  grid-column: 1 / -1;
-  justify-content: flex-end;
-  min-height: 1.75rem;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 1.5rem;
 }
 
 .public-address-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   min-width: 0;
 }
 
 .public-address-column--secondary {
-  padding-left: clamp(1.25rem, 3vw, 2.5rem);
-  border-left: 1px solid rgb(89 71 168 / 25%);
+  padding-top: 1.25rem;
+  border-top: 1px solid rgb(89 71 168 / 25%);
+}
+
+.public-address-main {
+  min-width: 0;
+}
+
+.public-address-column--single {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(11rem, 1fr);
+  column-gap: 1rem;
+  align-items: center;
+}
+
+.public-address-aside {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.address-heading-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.address-value-row {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  min-width: 0;
+  gap: 1rem;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.address-value-row--secondary {
+  align-items: flex-end;
+}
+
+.address-value-row > .copy-control {
+  position: relative;
+  width: fit-content;
+}
+
+.address-value-row > .copy-control .copy-status {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  right: 0;
 }
 
 .public-address-label {
@@ -186,7 +229,9 @@ a:focus-visible,
 }
 
 .public-address-value {
-  margin: 0.45rem 0 1rem;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0.45rem 0 0;
   overflow-wrap: anywhere;
   font-family: "Inter Variable", Inter, system-ui, sans-serif;
   font-weight: 800;
@@ -194,7 +239,7 @@ a:focus-visible,
 
 .public-address-value--primary {
   color: var(--drawably-stroke);
-  font-size: clamp(2.25rem, 6vw, 4.75rem);
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
   letter-spacing: -0.04em;
   line-height: 1;
 }
@@ -204,64 +249,27 @@ a:focus-visible,
   line-height: 1.4;
 }
 
-.public-address-value--pseudo {
-  margin: 0.25rem 0 0;
-  font-size: 1rem;
-  line-height: 1.4;
+.public-address-value--primary.public-address-value--ipv6 {
+  font-size: clamp(1.5rem, 2.5vw, 1.875rem);
+  line-height: 1.12;
 }
 
-.pseudo-address {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1rem;
-  align-items: end;
-  margin-top: var(--space-group);
-  padding-top: var(--space-tight);
-  border-top: 1px solid rgb(89 71 168 / 20%);
+.public-address-value--primary.public-address-value--unavailable {
+  flex-shrink: 0;
+  font-size: clamp(2.5rem, 4vw, 3rem);
+  line-height: 1.05;
+  white-space: nowrap;
 }
 
-.privacy-badge,
+.public-address-value--secondary.public-address-value--unavailable {
+  flex-shrink: 0;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
 .approximation-badge {
   font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
-}
-
-.privacy-badge {
-  display: inline-flex;
-  gap: 0.35rem;
-  align-items: center;
-  padding: 0.15rem 0.55rem;
-  color: #292720;
-  background: var(--drawably-paper);
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  line-height: 1.35;
-}
-
-.privacy-sparkle {
-  position: relative;
-  display: block;
-  width: 0.72em;
-  height: 0.72em;
-  color: #f28a68;
-  transform: rotate(-8deg);
-}
-
-.privacy-sparkle::before,
-.privacy-sparkle::after {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 1.5px;
-  border-radius: 999px;
-  background: currentcolor;
-  content: "";
-  transform: translate(-50%, -50%);
-}
-
-.privacy-sparkle::after {
-  transform: translate(-50%, -50%) rotate(90deg) scaleX(0.72);
 }
 
 .copy-control {
@@ -273,6 +281,38 @@ a:focus-visible,
 
 .primary-copy-target {
   width: fit-content;
+}
+
+.public-address-note {
+  color: var(--accent-coral);
+  font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  line-height: 1.1;
+  transform: rotate(-2deg);
+}
+
+.public-address-note--single::before {
+  content: "← ";
+}
+
+@media (width <= 48rem) {
+  .public-address-value--primary:not(.public-address-value--ipv6) {
+    font-size: clamp(1.25rem, 5.5vw, 2.25rem);
+    white-space: nowrap;
+  }
+
+  .public-address-column--single {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 1rem;
+  }
+
+  .public-address-aside {
+    justify-content: flex-end;
+  }
+
+  .public-address-note--single::before {
+    content: "↖ ";
+  }
 }
 
 .primary-copy-target .copy-control {
@@ -291,6 +331,11 @@ a:focus-visible,
   padding: 0.55rem 1rem;
   font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
   font-size: 1.15rem;
+}
+
+.address-value-row--secondary .copy-button.drawably-button {
+  padding: 0.42rem 0.75rem;
+  font-size: 1rem;
 }
 
 .copy-status {
@@ -328,7 +373,7 @@ a:focus-visible,
 
 .network-summary {
   position: relative;
-  top: -0.25rem;
+  top: -0.75rem;
   z-index: 1;
   display: grid;
   grid-column: 2;
@@ -523,7 +568,11 @@ a:focus-visible,
 }
 
 .approximation-badge {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
   margin-top: var(--space-tight);
+  margin-left: auto;
 }
 
 .more-details {
@@ -535,6 +584,10 @@ a:focus-visible,
 
 .more-details > summary {
   position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
   width: fit-content;
   margin-right: 0;
   margin-left: 0;
@@ -544,18 +597,51 @@ a:focus-visible,
   font-size: clamp(1.5rem, 4vw, 2rem);
 }
 
+.details-expand-note {
+  color: var(--ink-muted);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: nowrap;
+  transform: rotate(-3deg);
+}
+
+.details-expand-note::before {
+  content: "← ";
+}
+
+.details-title {
+  position: relative;
+  min-width: 0;
+}
+
+@media (width <= 48rem) {
+  .details-expand-note {
+    flex-basis: 100%;
+  }
+
+  .details-expand-note::before {
+    content: "↖ ";
+  }
+}
+
+.more-details[open] .details-expand-note {
+  display: none;
+}
+
 .more-details > summary::-webkit-details-marker {
   display: none;
 }
 
-.more-details > summary::before {
+.details-title::before {
   position: absolute;
+  top: 0;
   right: 100%;
   margin-right: 0.5rem;
   content: "+";
 }
 
-.more-details[open] > summary::before {
+.more-details[open] .details-title::before {
   content: "− ";
 }
 
@@ -604,30 +690,41 @@ a:focus-visible,
 .trust-assurances.drawably-list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.75rem 2rem;
+  text-align: left;
   margin: 0;
-  margin-top: var(--space-section);
   padding: 0;
-  padding-right: var(--content-inset);
-  padding-left: var(--content-inset);
-  color: #292720;
-  font-size: 0.9rem;
+  color: #5947a8;
+  font-family: "Drawably Pen", "Inter Variable", Inter, system-ui, sans-serif;
+  font-size: 1.15rem;
+}
+
+.trust-assurances.drawably-list > li {
+  margin-left: 24px;
 }
 
 .site-footer {
   display: grid;
-  gap: 0.6rem;
+  gap: 1.5rem;
   margin-top: var(--space-section);
   padding-right: var(--content-inset);
   padding-left: var(--content-inset);
   color: var(--ink-muted);
-  font-size: 0.86rem;
-  line-height: 1.55;
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 1.7;
 }
 
-.site-footer p {
+.site-footer-notes {
+  display: grid;
+  justify-self: center;
   max-width: 72ch;
   margin: 0;
+  padding-left: 1.25em;
+  text-align: left;
+  list-style: disc;
+  gap: 0.4rem;
 }
 
 @media (max-width: 56rem) {
@@ -719,8 +816,7 @@ a:focus-visible,
     grid-template-columns: 1fr;
   }
 
-  .trust-assurances {
-    display: grid;
+  .trust-assurances.drawably-list {
     gap: 0.65rem;
   }
 }

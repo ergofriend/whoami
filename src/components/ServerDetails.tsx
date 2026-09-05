@@ -77,7 +77,12 @@ export function ServerDetails({
 
       <details className="more-details">
         <summary className="sketch-heading">
-          <SketchUnderline>More technical details</SketchUnderline>
+          <span className="details-title">
+            <SketchUnderline>More technical details</SketchUnderline>
+          </span>
+          <span className="details-expand-note" aria-hidden="true">
+            click to expand
+          </span>
         </summary>
         <div className="details-stack">
           <div className="details-column details-column--server">
