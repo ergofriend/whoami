@@ -34,22 +34,6 @@ export function ServerDetails({
         />
       </section>
       <div className="summary-layout">
-        <section className="network-summary" aria-labelledby="network-heading">
-          <h2 id="network-heading" className="sketch-heading network-heading">
-            Network
-            <DoodleIcon kind="globe" />
-          </h2>
-          <dl>
-            <div>
-              <dt>ASN</dt>
-              <dd>{inspection.network.asn ?? "Not available"}</dd>
-            </div>
-            <div>
-              <dt>Organization</dt>
-              <dd>{inspection.network.organization ?? "Not available"}</dd>
-            </div>
-          </dl>
-        </section>
         <KeyValueSection
           className="location-summary"
           icon="location"
@@ -72,7 +56,25 @@ export function ServerDetails({
             IP-derived · approximate
           </SketchBadge>
         </KeyValueSection>
-        <div className="browser-summary">{browserDetails}</div>
+        <div className="summary-right-column">
+          <section className="network-summary" aria-labelledby="network-heading">
+            <h2 id="network-heading" className="sketch-heading network-heading">
+              Network
+              <DoodleIcon kind="globe" />
+            </h2>
+            <dl>
+              <div>
+                <dt>ASN</dt>
+                <dd>{inspection.network.asn ?? "Not available"}</dd>
+              </div>
+              <div>
+                <dt>Organization</dt>
+                <dd>{inspection.network.organization ?? "Not available"}</dd>
+              </div>
+            </dl>
+          </section>
+          <div className="browser-summary">{browserDetails}</div>
+        </div>
       </div>
 
       <details className="more-details">

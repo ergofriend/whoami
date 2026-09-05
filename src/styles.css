@@ -365,6 +365,18 @@ a:focus-visible,
   padding-left: var(--content-inset);
 }
 
+.summary-right-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-group);
+  min-width: 0;
+}
+
+.summary-right-column > * {
+  flex-shrink: 0;
+}
+
 .connection-overview {
   display: grid;
   padding-right: var(--content-inset);
@@ -376,11 +388,8 @@ a:focus-visible,
   top: -0.75rem;
   z-index: 1;
   display: grid;
-  grid-column: 2;
-  grid-row: 1;
   gap: 0.65rem;
-  align-self: start;
-  justify-self: center;
+  align-self: center;
   width: min(100%, 22rem);
   margin: 0;
   padding-block: 0.5rem 0.55rem;
@@ -476,9 +485,7 @@ a:focus-visible,
 }
 
 .browser-summary {
-  grid-column: 2;
-  grid-row: 1;
-  align-self: end;
+  align-self: stretch;
   margin-top: 0;
 }
 
@@ -767,7 +774,7 @@ a:focus-visible,
   }
 
   .browser-summary {
-    align-self: start;
+    align-self: stretch;
     margin-top: 0;
   }
 

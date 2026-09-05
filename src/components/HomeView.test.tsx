@@ -71,7 +71,7 @@ describe("HomeView", () => {
         .getAllByRole("heading")
         .filter((heading) => heading.closest("details") === null)
         .map((heading) => heading.textContent),
-    ).toEqual(["whoami", "Public IP addresses", "Network", "Approximate Location", "Browser"]);
+    ).toEqual(["whoami", "Public IP addresses", "Approximate Location", "Network", "Browser"]);
 
     const banner = screen.getByRole("banner");
     expect(banner).toBeInTheDocument();
@@ -119,9 +119,7 @@ describe("HomeView", () => {
     const network = screen.getByRole("region", { name: "Network" });
     expect(getComputedStyle(network).position).toBe("relative");
     expect(getComputedStyle(network).top).toBe("-0.75rem");
-    expect(getComputedStyle(network).gridColumn).toBe("2");
-    expect(getComputedStyle(network).gridRow).toBe("1");
-    expect(getComputedStyle(network).justifySelf).toBe("center");
+    expect(getComputedStyle(network).alignSelf).toBe("center");
     const networkHeading = screen.getByRole("heading", { name: "Network", level: 2 });
     const networkIcon = networkHeading.querySelector(".doodle-icon") as SVGElement;
     expect(getComputedStyle(networkIcon).position).toBe("absolute");
@@ -139,8 +137,15 @@ describe("HomeView", () => {
       "minmax(0, 1.1fr) minmax(20rem, 0.9fr)",
     );
     const browserSummary = screen.getByText("Browser").closest(".browser-summary")!;
-    expect(getComputedStyle(browserSummary).gridRow).toBe("1");
-    expect(getComputedStyle(browserSummary).alignSelf).toBe("end");
+    const rightColumn = browserSummary.parentElement!;
+    expect(rightColumn).toHaveClass("summary-right-column");
+    expect(network.parentElement).toBe(rightColumn);
+    expect(getComputedStyle(rightColumn).display).toBe("flex");
+    expect(getComputedStyle(rightColumn).flexDirection).toBe("column");
+    expect(getComputedStyle(rightColumn).justifyContent).toBe("space-between");
+    expect(getComputedStyle(rightColumn).gap).toBe("var(--space-group)");
+    expect(getComputedStyle(network).flexShrink).toBe("0");
+    expect(getComputedStyle(browserSummary).flexShrink).toBe("0");
 
     expect([
       getComputedStyle(screen.getByRole("banner")).marginBottom,
@@ -230,8 +235,8 @@ describe("HomeView", () => {
     expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
       "whoami",
       "Public IP addresses",
-      "Network",
       "Approximate Location",
+      "Network",
       "Browser",
       "Connection",
       "Device and screen",

@@ -105,17 +105,16 @@ describe("ServerDetails", () => {
     const summaryLayout = document.querySelector(".summary-layout");
     expect(summaryLayout).not.toBeNull();
     expect(Array.from(summaryLayout?.children ?? []).map((child) => child.className)).toEqual([
-      "network-summary",
       "key-value-section location-summary",
-      "browser-summary",
+      "summary-right-column",
     ]);
 
     fireEvent.click(screen.getByText("More technical details"));
 
     expect(screen.getAllByRole("heading").map((heading) => heading.textContent)).toEqual([
       "Public IP addresses",
-      "Network",
       "Approximate Location",
+      "Network",
       "Browser",
       "Connection",
       "Device and screen",
